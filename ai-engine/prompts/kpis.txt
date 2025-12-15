@@ -1,0 +1,9 @@
+Com base nos dados e contexto, gere KPIs corporativos:
+
+- KPIs Operacionais
+- KPIs Financeiros
+- KPIs de Entregáveis
+- KPIs de Follow-ups
+- KPIs de Eficiência
+
+Responda como uma apresentação executiva.

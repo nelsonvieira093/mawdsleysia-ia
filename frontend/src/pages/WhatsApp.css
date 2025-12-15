@@ -1,0 +1,8 @@
+/* frontend/src/pages/WhatsApp.css */
+.whatsapp-container { display:flex; min-height:100vh; background:var(--bg-primary); }
+.whatsapp-main { margin-left:260px; padding:28px; width:100%; }
+.wa-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+.wa-badge { padding:6px 10px; border-radius:10px; font-weight:600; }
+.wa-badge.online { background:#e6fff0; color:#0a7a3a; }
+.wa-badge.offline { background:#fff0f0; color:#8a1a1a; }
+.wa-panel { display:flex; height:72vh; gap:18px; }

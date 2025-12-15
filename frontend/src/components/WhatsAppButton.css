@@ -1,0 +1,22 @@
+/* frontend/src/components/WhatsAppButton.css */
+.wa-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(180deg, #25d366, #1db954);
+  border: none;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(37,211,102,0.12);
+  transition: transform .08s ease, box-shadow .12s ease, opacity .12s;
+  align-self: center;
+}
+.wa-button:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(37,211,102,0.14); }
+.wa-button:active { transform: translateY(0); opacity: 0.95; }
+
+.wa-button .wa-label { font-size: 14px; }
+.wa-small { padding: 6px 8px; border-radius: 8px; }
+.wa-small .wa-label { display: none; }

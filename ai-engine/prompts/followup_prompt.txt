@@ -1,0 +1,10 @@
+Gere follow-ups claros, objetivos e acionáveis.
+
+Formato:
+- Título da ação
+- Responsável
+- Data limite
+- Status atual
+- Próximos passos
+
+Sempre entregue no estilo corporativo.
