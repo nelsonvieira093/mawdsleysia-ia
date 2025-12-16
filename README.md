@@ -110,3 +110,11 @@ comaando para ver versão do Fly
 
 #Para abrir FLy
 & "$env:USERPROFILE\.fly\bin\flyctl.exe" auth login
+
+A sequência é sempre:
+
+git add
+git commit
+git push
+
+/c/Users/Nelson\ Vieira/.fly/bin/flyctl.exe deploy
