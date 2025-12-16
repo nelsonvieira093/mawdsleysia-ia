@@ -117,6 +117,32 @@ main_simple.py
 api_simple.py
 ngrok.zip
 
+.env
+
+
+__pycache__/
+*.pyc
+.env
+venv/
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+.env
+.env.*
+
+venv/
+.venv/
+
+*.log
+
+tests/
+scripts/
+*.bak
+
+
 # =========================
 # Backups
 # =========================
