@@ -1,5 +1,3 @@
-# backend/main.py — MAWDSLEYS API (OPENAI REAL, SEM DEMO)
-
 import os
 import sys
 from pathlib import Path
@@ -10,19 +8,20 @@ from fastapi import FastAPI, APIRouter, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
+import openai
 
-# ===============================
+# =====================================================
 # PATHS
-# ===============================
+# =====================================================
 BASE_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(BASE_DIR))
 
 print("🚀 Iniciando backend MAWDSLEYS")
 print(f"📁 Backend dir: {BASE_DIR}")
 
-# ===============================
+# =====================================================
 # ENV
-# ===============================
+# =====================================================
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -31,33 +30,31 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY or len(OPENAI_API_KEY) < 20:
     raise RuntimeError("❌ OPENAI_API_KEY não encontrada ou inválida")
 
-from openai import OpenAI
-client = OpenAI(api_key=OPENAI_API_KEY)
+# SDK CLÁSSICO (ESTÁVEL)
+openai.api_key = OPENAI_API_KEY
+print("🤖 OpenAI configurada com sucesso (SDK CLÁSSICO)")
 
-print("🤖 OpenAI configurada com sucesso (MODO REAL)")
-
-# ===============================
+# =====================================================
 # LIFESPAN
-# ===============================
+# =====================================================
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("🔄 Inicializando aplicação...")
     yield
     print("👋 Encerrando aplicação...")
 
-# ===============================
+# =====================================================
 # APP
-# ===============================
+# =====================================================
 app = FastAPI(
     title="MAWDSLEYS API",
     version="2.0.0",
-    docs_url="/docs",
     lifespan=lifespan
 )
 
-# ===============================
+# =====================================================
 # CORS
-# ===============================
+# =====================================================
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -65,15 +62,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ===============================
+# =====================================================
 # ROOT
-# ===============================
+# =====================================================
 @app.get("/")
 async def root():
     return {
         "name": "MAWDSLEYS API",
         "status": "online",
-        "docs": "/docs"
+        "timestamp": datetime.utcnow().isoformat()
     }
 
 @app.get("/health")
@@ -84,74 +81,14 @@ async def health():
         "timestamp": datetime.utcnow().isoformat()
     }
 
-# ===============================
+# =====================================================
 # API ROUTER
-# ===============================
+# =====================================================
 api = APIRouter(prefix="/api")
 
-# ===============================
-# AUTH
-# ===============================
-auth = APIRouter(prefix="/auth", tags=["Auth"])
-
-class Login(BaseModel):
-    email: str
-    password: str
-
-@auth.post("/login")
-async def login(data: Login):
-    return {
-        "token": "fake-token",
-        "email": data.email
-    }
-
-api.include_router(auth)
-
-# ===============================
-# KPIs
-# ===============================
-kpis = APIRouter(prefix="/kpis", tags=["KPIs"])
-
-@kpis.get("/")
-async def get_kpis():
-    return [
-        {"id": 1, "name": "Conversão", "current": 78, "target": 85},
-        {"id": 2, "name": "Satisfação", "current": 92, "target": 90},
-    ]
-
-api.include_router(kpis)
-
-# ===============================
-# MEETINGS
-# ===============================
-meetings = APIRouter(prefix="/meetings", tags=["Meetings"])
-
-@meetings.get("/")
-async def get_meetings():
-    return [
-        {"id": 1, "title": "Planejamento", "time": "10:00"},
-        {"id": 2, "title": "Review", "time": "14:00"},
-    ]
-
-api.include_router(meetings)
-
-# ===============================
-# FOLLOWUPS
-# ===============================
-followups = APIRouter(prefix="/followups", tags=["Followups"])
-
-@followups.get("/")
-async def get_followups():
-    return [
-        {"id": 1, "title": "Cliente X"},
-        {"id": 2, "title": "Cliente Y"},
-    ]
-
-api.include_router(followups)
-
-# ===============================
-# CHAT — OPENAI REAL (SEM DEMO)
-# ===============================
+# =====================================================
+# CHAT — IA REAL (ESTÁVEL)
+# =====================================================
 chat = APIRouter(prefix="/chat", tags=["Chat"])
 
 class ChatRequest(BaseModel):
@@ -168,45 +105,47 @@ async def chat_health():
 @chat.post("/")
 async def chat_handler(data: ChatRequest):
     try:
-        prompt = f"""
-Você é o assistente corporativo MAWDSLEYS.
-Seja profissional, claro e objetivo.
-
-Usuário:
-{data.message}
-"""
-
-        response = client.responses.create(
-            model="gpt-4.1-mini",
-            input=prompt
+        response = openai.ChatCompletion.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Você é o assistente corporativo MAWDSLEYS. Seja profissional, claro e objetivo."
+                },
+                {
+                    "role": "user",
+                    "content": data.message
+                }
+            ],
+            temperature=0.4,
+            max_tokens=800
         )
 
         return {
-            "reply": response.output_text,
-            "model": "gpt-4.1-mini",
+            "reply": response.choices[0].message["content"],
+            "model": "gpt-4o-mini",
             "mode": "ai",
             "timestamp": datetime.utcnow().isoformat()
         }
 
     except Exception as e:
-        print("❌ Erro OpenAI:", e)
+        print("❌ ERRO OPENAI:", e)
         raise HTTPException(
             status_code=500,
-            detail="Erro ao processar requisição com OpenAI"
+            detail="Erro ao processar mensagem com OpenAI"
         )
 
+# =====================================================
+# INCLUDE ROUTERS
+# =====================================================
 api.include_router(chat)
-
-# ===============================
-# INCLUDE API
-# ===============================
 app.include_router(api)
 
-print("✅ MAWDSLEYS API carregada com OpenAI REAL (sem DEMO)")
+print("✅ MAWDSLEYS API pronta com IA REAL (ONLINE)")
 
-# ===============================
-# LOCAL RUN
-# ===============================
+# =====================================================
+# RUN
+# =====================================================
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",
