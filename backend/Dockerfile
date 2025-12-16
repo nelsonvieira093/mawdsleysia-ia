@@ -1,27 +1,17 @@
 FROM python:3.11-slim
 
-
-
-# Copia TODO o projeto
-COPY . /app/backend
-
-# Define PYTHONPATH corretamente
-ENV PYTHONPATH=/app
-
-WORKDIR /app/backend
-
-RUN pip install --no-cache-dir -r requirements.txt
-
-EXPOSE 8000
-
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-
-FROM node:20-alpine
-
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm install
+# Evita cache inútil
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
+# Dependências
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Código
 COPY . .
-RUN npm run build
+
+# Ajuste se o seu main for outro arquivo
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8080"]
