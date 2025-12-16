@@ -84,3 +84,94 @@ dist/
 # OS / misc
 nul
 .DS_Store
+
+
+# =========================
+# Python
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+venv/
+.env.*
+
+# =========================
+# Node / Frontend
+# =========================
+node_modules/
+dist/
+
+# =========================
+# Tests / Scripts locais
+# =========================
+test_*.py
+diagnose.py
+apply_fix.py
+fix_*.py
+check_*.py
+run_api.py
+server_final.py
+main_simple.py
+api_simple.py
+ngrok.zip
+
+# =========================
+# Backups
+# =========================
+*.bak
+*.backup
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
+
+__pycache__/
+*.pyc
+*.bak
+*.backup
+.env
+venv/
+
+test_*.py
+diagnose.py
+apply_fix.py
+fix_*.py
+run_api.py
+server_final.py
+main_simple.py
+api_simple.py
+ngrok.zip
+
+
+__pycache__/
+*.pyc
+*.bak
+.env
+.env.*
+ngrok.zip
+scripts/
+tests/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ambientes
+.env
+.env.*
+venv/
+.venv/
+
+# Backups / lixo
+*.bak
+ngrok.zip
+
+# Tests / scripts locais
+tests/
+scripts/
