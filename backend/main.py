@@ -1,13 +1,12 @@
-# backend/main.py — MAWDSLEYS API (VERSÃO FINAL ESTÁVEL)
+# backend/main.py — MAWDSLEYS API (OPENAI REAL, SEM DEMO)
 
 import os
 import sys
 from pathlib import Path
 from datetime import datetime
-from typing import Optional
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
@@ -28,19 +27,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-openai_enabled = False
-client = None
 
-if OPENAI_API_KEY and len(OPENAI_API_KEY) > 20:
-    try:
-        from openai import OpenAI
-        client = OpenAI(api_key=OPENAI_API_KEY)
-        openai_enabled = True
-        print("🤖 OpenAI configurada com sucesso")
-    except Exception as e:
-        print("❌ Erro ao inicializar OpenAI:", e)
-else:
-    print("⚠️ OpenAI NÃO configurada — modo DEMO")
+if not OPENAI_API_KEY or len(OPENAI_API_KEY) < 20:
+    raise RuntimeError("❌ OPENAI_API_KEY não encontrada ou inválida")
+
+from openai import OpenAI
+client = OpenAI(api_key=OPENAI_API_KEY)
+
+print("🤖 OpenAI configurada com sucesso (MODO REAL)")
 
 # ===============================
 # LIFESPAN
@@ -86,7 +80,7 @@ async def root():
 async def health():
     return {
         "status": "ok",
-        "openai": openai_enabled,
+        "openai": True,
         "timestamp": datetime.utcnow().isoformat()
     }
 
@@ -156,7 +150,7 @@ async def get_followups():
 api.include_router(followups)
 
 # ===============================
-# CHAT (OPENAI REAL)
+# CHAT — OPENAI REAL (SEM DEMO)
 # ===============================
 chat = APIRouter(prefix="/chat", tags=["Chat"])
 
@@ -167,21 +161,12 @@ class ChatRequest(BaseModel):
 async def chat_health():
     return {
         "status": "online",
-        "openai": openai_enabled,
-        "mode": "ai" if openai_enabled else "demo"
+        "openai": True,
+        "mode": "ai"
     }
 
 @chat.post("/")
 async def chat_handler(data: ChatRequest):
-    # ---------- DEMO ----------
-    if not openai_enabled or not client:
-        return {
-            "reply": f"🤖 **Modo DEMO**\n\nVocê disse:\n{data.message}",
-            "mode": "demo",
-            "timestamp": datetime.utcnow().isoformat()
-        }
-
-    # ---------- IA REAL ----------
     try:
         prompt = f"""
 Você é o assistente corporativo MAWDSLEYS.
@@ -198,19 +183,17 @@ Usuário:
 
         return {
             "reply": response.output_text,
-            "mode": "ai",
             "model": "gpt-4.1-mini",
+            "mode": "ai",
             "timestamp": datetime.utcnow().isoformat()
         }
 
     except Exception as e:
         print("❌ Erro OpenAI:", e)
-        return {
-            "reply": "🔧 Ops! Estou com dificuldades técnicas no momento.",
-            "error": str(e),
-            "mode": "error",
-            "timestamp": datetime.utcnow().isoformat()
-        }
+        raise HTTPException(
+            status_code=500,
+            detail="Erro ao processar requisição com OpenAI"
+        )
 
 api.include_router(chat)
 
@@ -219,7 +202,7 @@ api.include_router(chat)
 # ===============================
 app.include_router(api)
 
-print("✅ MAWDSLEYS API carregada com sucesso")
+print("✅ MAWDSLEYS API carregada com OpenAI REAL (sem DEMO)")
 
 # ===============================
 # LOCAL RUN
