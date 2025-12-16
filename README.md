@@ -92,3 +92,21 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 fastapi dev main.py
 # ou
 python -m uvicorn main:app --reload
+
+./ngrok.exe http --domain=mawdsleysia-ia.ngrok.io 8000
+
+
+uvicorn backend.api.main:app --host 127.0.0.1 --port 8000 --reload
+PS E:\MAWDSLEYS-AGENTE>
+
+
+uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
+
+ E:\MAWDSLEYS-AGENTE> venv\Scripts\activate
+>> uvicorn backend.main:app --reload
+comaando para ver versão do Fly
+
+& "$env:USERPROFILE\.fly\bin\flyctl.exe" version
+
+#Para abrir FLy
+& "$env:USERPROFILE\.fly\bin\flyctl.exe" auth login

@@ -1,47 +1,73 @@
-// E:\MAWDSLEYS-AGENTE\frontend\src\services\api.js
+// frontend/src/services/api.js
 import axios from "axios";
 
+// ================================
+// BASE URL (VITE)
+// ================================
+const baseURL = import.meta.env.VITE_API_URL;
+
+// Blindagem: avisa claramente se o .env não foi carregado
+if (!baseURL) {
+  console.error(
+    "❌ ERRO CRÍTICO: VITE_API_URL não definida. Verifique frontend/.env e reinicie o Vite."
+  );
+} else {
+  console.log("✅ API BaseURL:", baseURL);
+}
+
+// ================================
+// AXIOS INSTANCE
+// ================================
 const api = axios.create({
-  baseURL: "http://localhost:8000/api", // 🔥 ADICIONE /api AQUI!
+  baseURL,
   headers: {
     "Content-Type": "application/json",
   },
   timeout: 15000,
 });
 
-// Injeta token SOMENTE se existir
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// ================================
+// REQUEST INTERCEPTOR (TOKEN)
+// ================================
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
 
-// Interceptor de resposta MELHORADO
-api.interceptors.response.use(
-  (res) => {
-    console.log(
-      `✅ ${res.config.method?.toUpperCase()} ${res.config.url}:`,
-      res.status
-    );
-    return res;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
   },
-  (err) => {
-    console.error(
-      `❌ ${err.config?.method?.toUpperCase()} ${err.config?.url}:`,
-      err.response?.status
-    );
+  (error) => Promise.reject(error)
+);
 
-    // Token expirado
-    if (err.response?.status === 401) {
-      console.warn("Token expirado ou inválido");
+// ================================
+// RESPONSE INTERCEPTOR (LOG + AUTH)
+// ================================
+api.interceptors.response.use(
+  (response) => {
+    console.log(
+      `✅ ${response.config.method?.toUpperCase()} ${response.config.url}`,
+      response.status
+    );
+    return response;
+  },
+  (error) => {
+    const status = error.response?.status;
+    const url = error.config?.url;
+
+    console.error(`❌ API ERROR ${status || ""} ${url || ""}`);
+
+    // Token expirado / inválido
+    if (status === 401) {
+      console.warn("⚠️ Token inválido ou expirado. Redirecionando para login.");
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       window.location.href = "/login";
     }
 
-    return Promise.reject(err);
+    return Promise.reject(error);
   }
 );
 
