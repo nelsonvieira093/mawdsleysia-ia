@@ -118,3 +118,14 @@ git commit
 git push
 
 /c/Users/Nelson\ Vieira/.fly/bin/flyctl.exe deploy
+
+
+
+
+PARA RODAR O BUILD
+flyctl deploy --remote-only --no-cache -a backend-green-feather-7102
+
+
+cd E:\MAWDSLEYS-AGENTE\backend
+flyctl deploy --remote-only --no-cache -a backend-green-feather-7102
+
