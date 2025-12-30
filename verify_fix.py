@@ -1,6 +1,6 @@
 # verify_fix.py - Crie este arquivo na raiz
 import sys
-from pathlib import Path
+from  pathlib import Path
 
 # Adicionar backend ao path
 sys.path.append(str(Path(__file__).parent / "backend"))
@@ -10,7 +10,7 @@ print("="*50)
 
 # 1. Testar import do User
 try:
-    from models.user import User
+    from  models.user import User
     print("✅ 1. User importado de models.user")
     print(f"   Módulo: {User.__module__}")
     print(f"   Tabela: {User.__tablename__}")
@@ -36,7 +36,7 @@ for rel in required_rels:
 # 4. Testar import dos modelos antigos
 print(f"\n✅ 4. Modelos antigos:")
 try:
-    from database.models import FollowUp, KPI, Meeting
+    from  database.models import FollowUp, KPI, Meeting
     print(f"   ✅ FollowUp importado: {FollowUp.__tablename__}")
     print(f"   ✅ KPI importado: {KPI.__tablename__}")
     print(f"   ✅ Meeting importado: {Meeting.__tablename__}")
@@ -46,8 +46,8 @@ except Exception as e:
 # 5. Verificar banco
 print(f"\n✅ 5. Verificando banco de dados...")
 try:
-    from database.session import engine
-    from sqlalchemy import inspect
+    from  database.session import engine
+    from  sqlalchemy import inspect
     
     inspector = inspect(engine)
     tables = inspector.get_table_names()

@@ -3,15 +3,15 @@ from datetime import datetime
 
 # Import somente o que precisamos; se outros models existirem, adicione-os em backend/models/
 try:
-    from backend.models.user import User
+    from models.user import User
 except ImportError:
     User = None
 
 # IMPORTS opcionais — se seus outros modelos existirem, mova-os para backend/models/ e descomente
 # try:
-#     from backend.models.followup import FollowUp
-#     from backend.models.kpi import KPI
-#     from backend.models.meeting import Meeting
+#     from models.followup import FollowUp
+#     from models.kpi import KPI
+#     from models.meeting import Meeting
 # except ImportError:
 #     FollowUp = None
 #     KPI = None

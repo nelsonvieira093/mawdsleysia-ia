@@ -1,11 +1,11 @@
 # backend/api/routes/ai_kpis.py
-from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
-from typing import Optional, Dict, Any, List
+from  fastapi import APIRouter, HTTPException, Depends
+from  pydantic import BaseModel
+from  typing import Optional, Dict, Any, List
 import os
-from datetime import datetime
+from  datetime import datetime
 
-from backend.middleware.auth import require_any_auth
+from middleware.auth import require_any_auth
 
 router = APIRouter(prefix="/ai/kpis", tags=["AI KPIs"])
 
@@ -28,7 +28,7 @@ async def analyze_kpi(
         # Modo demo
         if not os.getenv("OPENAI_API_KEY"):
             demo_analysis = f"""
-í³Š **AnÃ¡lise do KPI (Modo Demo)**
+ï¿½ï¿½ï¿½ **AnÃ¡lise do KPI (Modo Demo)**
 
 **Dados fornecidos:**
 {data.kpi_data}
@@ -67,7 +67,7 @@ Recomenda-se definir metas claras e acompanhar o progresso semanalmente.
         
         # IA real
         try:
-            from backend.agents.kpi_agent import analyze_kpi as ai_analyze
+            from agents.kpi_agent import analyze_kpi as ai_analyze
             response = ai_analyze(data.kpi_data)
         except ImportError:
             # Fallback

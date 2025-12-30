@@ -1,7 +1,19 @@
-class CEOAgent: pass
 import os
+import sys
+from pathlib import Path
 from openai import OpenAI
-from ai_engine.embeddings.embedding_loader import search_relevant
+
+# Add parent directory to path to resolve imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+try:
+    from ai_engine.embeddings.embedding_loader import search_relevant
+except ImportError:
+    # Fallback if import fails
+    from backend.ai_engine.embeddings.embedding_loader import search_relevant
+
+
+class CEOAgent: pass
 
 client = OpenAI()
 

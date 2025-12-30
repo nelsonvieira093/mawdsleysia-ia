@@ -19,119 +19,131 @@ export default function History() {
     {
       id: 1,
       titulo: "Follow-up: Relatório Mensal de Vendas",
-      descricao: "Follow-up enviado para a equipe de vendas sobre o relatório mensal. Aguardando feedback sobre os dados de Novembro/2025.",
+      descricao:
+        "Follow-up enviado para a equipe de vendas sobre o relatório mensal. Aguardando feedback sobre os dados de Novembro/2025.",
       data: "2025-11-28",
       hora: "14:30",
       tipo: "followup",
       status: "Aberto",
       responsavel: "Carlos Silva",
       prioridade: "alta",
-      tags: ["vendas", "relatório", "mensal"]
+      tags: ["vendas", "relatório", "mensal"],
     },
     {
       id: 2,
       titulo: "Reunião: Planejamento Q1 2026",
-      descricao: "Reunião de alinhamento para o planejamento do primeiro trimestre de 2026. Foram definidas as metas e OKRs.",
+      descricao:
+        "Reunião de alinhamento para o planejamento do primeiro trimestre de 2026. Foram definidas as metas e OKRs.",
       data: "2025-11-25",
       hora: "10:00",
       tipo: "reuniao",
       status: "Concluído",
       responsavel: "Ana Paula",
       prioridade: "media",
-      tags: ["planejamento", "reunião", "Q1"]
+      tags: ["planejamento", "reunião", "Q1"],
     },
     {
       id: 3,
       titulo: "Follow-up: Implementação do Novo Sistema",
-      descricao: "Acompanhamento da implementação do novo sistema ERP. Foram identificadas 3 pendências técnicas.",
+      descricao:
+        "Acompanhamento da implementação do novo sistema ERP. Foram identificadas 3 pendências técnicas.",
       data: "2025-11-23",
       hora: "16:45",
       tipo: "followup",
       status: "Em andamento",
       responsavel: "TI",
       prioridade: "alta",
-      tags: ["sistema", "ERP", "implementação"]
+      tags: ["sistema", "ERP", "implementação"],
     },
     {
       id: 4,
       titulo: "Aprovação: Contrato com Fornecedor",
-      descricao: "Follow-up para aprovação do contrato com novo fornecedor de infraestrutura. Documentação enviada para jurídico.",
+      descricao:
+        "Follow-up para aprovação do contrato com novo fornecedor de infraestrutura. Documentação enviada para jurídico.",
       data: "2025-11-20",
       hora: "11:15",
       tipo: "aprovacao",
       status: "Aberto",
       responsavel: "Jurídico",
       prioridade: "alta",
-      tags: ["contrato", "fornecedor", "jurídico"]
+      tags: ["contrato", "fornecedor", "jurídico"],
     },
     {
       id: 5,
       titulo: "Treinamento: Nova Ferramenta de CRM",
-      descricao: "Treinamento realizado com a equipe comercial sobre a nova ferramenta de CRM. 85% da equipe participou.",
+      descricao:
+        "Treinamento realizado com a equipe comercial sobre a nova ferramenta de CRM. 85% da equipe participou.",
       data: "2025-11-18",
       hora: "09:00",
       tipo: "treinamento",
       status: "Concluído",
       responsavel: "Marketing",
       prioridade: "baixa",
-      tags: ["treinamento", "CRM", "comercial"]
+      tags: ["treinamento", "CRM", "comercial"],
     },
     {
       id: 6,
       titulo: "Follow-up: Orçamento 2026",
-      descricao: "Follow-up sobre a elaboração do orçamento para 2026. Aguardando envio das previsões por departamento.",
+      descricao:
+        "Follow-up sobre a elaboração do orçamento para 2026. Aguardando envio das previsões por departamento.",
       data: "2025-11-15",
       hora: "15:30",
       tipo: "followup",
       status: "Aberto",
       responsavel: "Financeiro",
       prioridade: "media",
-      tags: ["orçamento", "2026", "financeiro"]
+      tags: ["orçamento", "2026", "financeiro"],
     },
     {
       id: 7,
       titulo: "Manutenção Preventiva",
-      descricao: "Manutenção preventiva realizada nos servidores. Todos os sistemas operando normalmente.",
+      descricao:
+        "Manutenção preventiva realizada nos servidores. Todos os sistemas operando normalmente.",
       data: "2025-11-10",
       hora: "22:00",
       tipo: "manutencao",
       status: "Concluído",
       responsavel: "Infraestrutura",
       prioridade: "media",
-      tags: ["manutenção", "servidores", "infraestrutura"]
+      tags: ["manutenção", "servidores", "infraestrutura"],
     },
     {
       id: 8,
       titulo: "Follow-up: Campanha de Marketing Digital",
-      descricao: "Acompanhamento dos resultados da campanha de marketing digital do último trimestre. ROI de 350% alcançado.",
+      descricao:
+        "Acompanhamento dos resultados da campanha de marketing digital do último trimestre. ROI de 350% alcançado.",
       data: "2025-11-05",
       hora: "13:20",
       tipo: "followup",
       status: "Concluído",
       responsavel: "Marketing",
       prioridade: "baixa",
-      tags: ["marketing", "campanha", "digital"]
-    }
+      tags: ["marketing", "campanha", "digital"],
+    },
   ];
 
   async function load() {
     try {
       setLoading(true);
       const res = await api.get("/followups/");
-      
+
       // Se a API retornar dados, use-os
       if (res.data && res.data.length > 0) {
-        const dadosApi = res.data.map(item => ({
+        const dadosApi = res.data.map((item) => ({
           id: item.id || item._id,
           titulo: item.titulo || item.title || "Sem título",
           descricao: item.descricao || item.description || "",
-          data: item.data || item.date || item.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0],
+          data:
+            item.data ||
+            item.date ||
+            item.createdAt?.split("T")[0] ||
+            new Date().toISOString().split("T")[0],
           hora: item.hora || item.time || "00:00",
           tipo: item.tipo || item.type || "followup",
           status: item.status || "Aberto",
           responsavel: item.responsavel || item.responsible || "Não definido",
           prioridade: item.prioridade || item.priority || "media",
-          tags: item.tags || []
+          tags: item.tags || [],
         }));
         setList(dadosApi);
       } else {
@@ -158,57 +170,67 @@ export default function History() {
     } else if (date.toDateString() === yesterday.toDateString()) {
       return "Ontem";
     } else {
-      return date.toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric'
+      return date.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
       });
     }
   };
 
   const getStatusClass = (status) => {
     switch (status.toLowerCase()) {
-      case 'concluído':
-      case 'concluido':
-        return 'status-completed';
-      case 'em andamento':
-      case 'em_andamento':
-        return 'status-in-progress';
-      case 'aberto':
-        return 'status-open';
+      case "concluído":
+      case "concluido":
+        return "status-completed";
+      case "em andamento":
+      case "em_andamento":
+        return "status-in-progress";
+      case "aberto":
+        return "status-open";
       default:
-        return 'status-open';
+        return "status-open";
     }
   };
 
   const getPriorityClass = (prioridade) => {
     switch (prioridade.toLowerCase()) {
-      case 'alta': return 'priority-high';
-      case 'media': return 'priority-medium';
-      case 'baixa': return 'priority-low';
-      default: return 'priority-medium';
+      case "alta":
+        return "priority-high";
+      case "media":
+        return "priority-medium";
+      case "baixa":
+        return "priority-low";
+      default:
+        return "priority-medium";
     }
   };
 
   const getTypeIcon = (tipo) => {
     switch (tipo) {
-      case 'followup': return '🔄';
-      case 'reuniao': return '👥';
-      case 'aprovacao': return '✅';
-      case 'treinamento': return '📚';
-      case 'manutencao': return '🔧';
-      default: return '📝';
+      case "followup":
+        return "🔄";
+      case "reuniao":
+        return "👥";
+      case "aprovacao":
+        return "✅";
+      case "treinamento":
+        return "📚";
+      case "manutencao":
+        return "🔧";
+      default:
+        return "📝";
     }
   };
 
   // Filtrar itens
-  const filteredList = list.filter(item => {
+  const filteredList = list.filter((item) => {
     // Filtro por status
     if (filter !== "all") {
       if (filter === "aberto" && item.status !== "Aberto") return false;
       if (filter === "concluido" && item.status !== "Concluído") return false;
     }
-    
+
     // Filtro por busca
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
@@ -216,10 +238,10 @@ export default function History() {
         item.titulo.toLowerCase().includes(term) ||
         item.descricao.toLowerCase().includes(term) ||
         item.responsavel.toLowerCase().includes(term) ||
-        item.tags.some(tag => tag.toLowerCase().includes(term))
+        item.tags.some((tag) => tag.toLowerCase().includes(term))
       );
     }
-    
+
     return true;
   });
 
@@ -239,11 +261,13 @@ export default function History() {
 
   const handleExport = () => {
     const dataStr = JSON.stringify(filteredList, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
     const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.download = `historico-followups-${new Date().toISOString().split('T')[0]}.json`;
+    link.download = `historico-followups-${
+      new Date().toISOString().split("T")[0]
+    }.json`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -251,14 +275,16 @@ export default function History() {
   return (
     <div className="history-container">
       <Sidebar />
-      
+
       <div className="history-main">
         <div className="history-header">
           <div className="header-left">
             <h1>Histórico e Follow-ups</h1>
-            <p className="subtitle">Acompanhe todo o histórico de atividades e follow-ups</p>
+            <p className="subtitle">
+              Acompanhe todo o histórico de atividades e follow-ups
+            </p>
           </div>
-          
+
           <div className="header-actions">
             <button className="btn-refresh" onClick={handleRefresh}>
               <span className="refresh-icon">⟳</span>
@@ -274,31 +300,31 @@ export default function History() {
         {/* Filtros */}
         <div className="filters-section">
           <div className="search-box">
-            <input 
-              type="text" 
-              placeholder="Buscar por título, descrição ou responsável..." 
+            <input
+              type="text"
+              placeholder="Buscar por título, descrição ou responsável..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             <span className="search-icon">🔍</span>
           </div>
-          
+
           <div className="filter-tabs">
-            <button 
-              className={`filter-tab ${filter === 'all' ? 'active' : ''}`}
-              onClick={() => setFilter('all')}
+            <button
+              className={`filter-tab ${filter === "all" ? "active" : ""}`}
+              onClick={() => setFilter("all")}
             >
               Todos
             </button>
-            <button 
-              className={`filter-tab ${filter === 'aberto' ? 'active' : ''}`}
-              onClick={() => setFilter('aberto')}
+            <button
+              className={`filter-tab ${filter === "aberto" ? "active" : ""}`}
+              onClick={() => setFilter("aberto")}
             >
               Abertos
             </button>
-            <button 
-              className={`filter-tab ${filter === 'concluido' ? 'active' : ''}`}
-              onClick={() => setFilter('concluido')}
+            <button
+              className={`filter-tab ${filter === "concluido" ? "active" : ""}`}
+              onClick={() => setFilter("concluido")}
             >
               Concluídos
             </button>
@@ -312,16 +338,20 @@ export default function History() {
             <div className="stat-label">Total de Itens</div>
           </div>
           <div className="stat-card">
-            <div className="stat-number">{list.filter(i => i.status === 'Aberto').length}</div>
+            <div className="stat-number">
+              {list.filter((i) => i.status === "Aberto").length}
+            </div>
             <div className="stat-label">Abertos</div>
           </div>
           <div className="stat-card">
-            <div className="stat-number">{list.filter(i => i.status === 'Concluído').length}</div>
+            <div className="stat-number">
+              {list.filter((i) => i.status === "Concluído").length}
+            </div>
             <div className="stat-label">Concluídos</div>
           </div>
           <div className="stat-card">
             <div className="stat-number">
-              {list.filter(i => i.prioridade.toLowerCase() === 'alta').length}
+              {list.filter((i) => i.prioridade.toLowerCase() === "alta").length}
             </div>
             <div className="stat-label">Alta Prioridade</div>
           </div>
@@ -347,29 +377,37 @@ export default function History() {
                   <div className="date-label">{date}</div>
                   <div className="date-line"></div>
                 </div>
-                
+
                 <div className="timeline-items">
                   {items.map((item) => (
                     <div key={item.id} className="timeline-card">
                       <div className="timeline-marker">
-                        <div className="marker-icon">{getTypeIcon(item.tipo)}</div>
+                        <div className="marker-icon">
+                          {getTypeIcon(item.tipo)}
+                        </div>
                         <div className="timeline-line"></div>
                       </div>
-                      
+
                       <div className="timeline-content">
                         <div className="card-header">
                           <div className="card-title-row">
                             <h3 className="card-title">{item.titulo}</h3>
-                            <div className="card-time">
-                              {item.hora}
-                            </div>
+                            <div className="card-time">{item.hora}</div>
                           </div>
-                          
+
                           <div className="card-meta">
-                            <span className={`status-badge ${getStatusClass(item.status)}`}>
+                            <span
+                              className={`status-badge ${getStatusClass(
+                                item.status
+                              )}`}
+                            >
                               {item.status}
                             </span>
-                            <span className={`priority-badge ${getPriorityClass(item.prioridade)}`}>
+                            <span
+                              className={`priority-badge ${getPriorityClass(
+                                item.prioridade
+                              )}`}
+                            >
                               {item.prioridade}
                             </span>
                             <span className="responsavel-badge">
@@ -377,10 +415,10 @@ export default function History() {
                             </span>
                           </div>
                         </div>
-                        
+
                         <div className="card-body">
                           <p className="card-description">{item.descricao}</p>
-                          
+
                           {item.tags && item.tags.length > 0 && (
                             <div className="card-tags">
                               {item.tags.map((tag, index) => (
@@ -391,7 +429,7 @@ export default function History() {
                             </div>
                           )}
                         </div>
-                        
+
                         <div className="card-actions">
                           <button className="btn-view">Ver Detalhes</button>
                           <button className="btn-edit">Editar</button>

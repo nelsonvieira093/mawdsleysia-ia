@@ -1,8 +1,8 @@
 # backend/models/user.py - VERSÃO COM STRINGS
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Table, ForeignKey, Text
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
-from backend.database.session import Base
+from  sqlalchemy import Column, Integer, String, DateTime, Boolean, Table, ForeignKey, Text
+from  sqlalchemy.orm import relationship
+from  sqlalchemy.sql import func
+from  database.session import Base
 
 # Tabela de associação
 user_role = Table(

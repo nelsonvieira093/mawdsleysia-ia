@@ -1,6 +1,6 @@
 import sys
 import os
-from pathlib import Path
+from  pathlib import Path
 
 # Configura paths
 BASE_DIR = Path(__file__).resolve().parent
@@ -16,7 +16,7 @@ print(f"📦 Path: {sys.path[0]}")
 env_file = BASE_DIR / ".env"
 if env_file.exists():
     print(f"✅ .env encontrado: {env_file}")
-    from dotenv import load_dotenv
+    from  dotenv import load_dotenv
     load_dotenv(dotenv_path=env_file)
 else:
     print(f"❌ .env não encontrado")

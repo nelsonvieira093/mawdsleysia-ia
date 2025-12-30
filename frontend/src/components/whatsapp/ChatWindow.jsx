@@ -27,9 +27,7 @@ export default function ChatWindow({ conversationId }) {
 
   if (!conversationId)
     return (
-      <div className="wa-chat-empty">
-        Selecione uma conversa para começar
-      </div>
+      <div className="wa-chat-empty">Selecione uma conversa para começar</div>
     );
 
   return (

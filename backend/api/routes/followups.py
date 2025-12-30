@@ -1,5 +1,5 @@
 # backend/api/routes/followups.py - VERSÃO CORRIGIDA
-from fastapi import APIRouter
+from  fastapi import APIRouter
 
 router = APIRouter(prefix="/followups", tags=["FollowUps"])
 

@@ -2,8 +2,8 @@
 import hmac
 import hashlib
 import os
-from typing import Optional
-from integrations.whatsapp.models import Conversation
+from  typing import Optional
+from  integrations.whatsapp.models import Conversation
 
 
 def get_env(name: str, default: Optional[str] = None) -> Optional[str]:

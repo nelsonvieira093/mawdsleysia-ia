@@ -1,9 +1,9 @@
 import sys
-from pathlib import Path
-from fastapi import FastAPI, Depends
-from fastapi.middleware.cors import CORSMiddleware
+from  pathlib import Path
+from  fastapi import FastAPI, Depends
+from  fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-from datetime import datetime
+from  datetime import datetime
 
 # Configurar paths
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -48,7 +48,7 @@ print("\nCarregando modulos...")
 
 # FollowUps (sistema antigo)
 try:
-    from api.routes.followups import router as followups_router
+    from  api.routes.followups import router as followups_router
     app.include_router(followups_router, prefix="/api")
     print("✅ FollowUps: /api/followups")
 except Exception as e:
@@ -56,7 +56,7 @@ except Exception as e:
 
 # KPIs
 try:
-    from api.routes.kpis import router as kpis_router
+    from  api.routes.kpis import router as kpis_router
     app.include_router(kpis_router, prefix="/api")
     print("✅ KPIs: /api/kpis")
 except Exception as e:
@@ -64,7 +64,7 @@ except Exception as e:
 
 # Meetings
 try:
-    from api.routes.meetings import router as meetings_router
+    from  api.routes.meetings import router as meetings_router
     app.include_router(meetings_router, prefix="/api")
     print("✅ Meetings: /api/meetings")
 except Exception as e:
@@ -72,7 +72,7 @@ except Exception as e:
 
 # Chat (IA)
 try:
-    from api.routes.chat import router as chat_router
+    from  api.routes.chat import router as chat_router
     app.include_router(chat_router, prefix="/api")
     print("✅ Chat IA: /api/chat")
 except:
@@ -80,7 +80,7 @@ except:
 
 # WhatsApp
 try:
-    from backend.integrations.whatsapp.router import router as whatsapp_router
+    from integrations.whatsapp.router import router as whatsapp_router
     app.include_router(whatsapp_router, prefix="/api")
     print("✅ WhatsApp: /api/whatsapp")
 except:

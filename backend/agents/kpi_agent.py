@@ -1,7 +1,9 @@
-class KPIAgent: pass
 import os
 from openai import OpenAI
 from ai_engine.embeddings.embedding_loader import search_relevant
+
+
+class KPIAgent: pass
 
 client = OpenAI()
 

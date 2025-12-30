@@ -36,8 +36,6 @@ export default function Sidebar() {
     },
   ];
 
-  
-
   return (
     <div className="sidebar">
       {/* Header */}
@@ -68,11 +66,10 @@ export default function Sidebar() {
             })}
           </div>
         ))}
-             <div className="sidebar-integrations">
-  <WhatsAppButton label="WhatsApp" small={false} />
-</div>
+        <div className="sidebar-integrations">
+          <WhatsAppButton label="WhatsApp" small={false} />
+        </div>
 
-   
         {/* Botão Sair */}
         <button onClick={logout} className="logout-btn">
           🚪 Sair

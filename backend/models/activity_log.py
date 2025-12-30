@@ -1,8 +1,8 @@
 # backend/models/activity_log.py
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
-from backend.database.session import Base
+from  sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
+from  sqlalchemy.orm import relationship
+from  sqlalchemy.sql import func
+from  database.session import Base
 
 class ActivityLog(Base):
     __tablename__ = "activity_logs"

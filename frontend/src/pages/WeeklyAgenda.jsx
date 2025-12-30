@@ -9,13 +9,13 @@ const MeetingDetailsModal = ({ meeting, isOpen, onClose }) => {
   const formatFullDate = (dateString) => {
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString('pt-BR', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+      return date.toLocaleDateString("pt-BR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       });
     } catch (error) {
       return dateString;
@@ -24,16 +24,19 @@ const MeetingDetailsModal = ({ meeting, isOpen, onClose }) => {
 
   const getStatusText = (status) => {
     const textMap = {
-      'confirmado': 'Confirmada',
-      'pendente': 'Pendente',
-      'cancelado': 'Cancelada'
+      confirmado: "Confirmada",
+      pendente: "Pendente",
+      cancelado: "Cancelada",
     };
-    return textMap[status?.toLowerCase()] || 'Pendente';
+    return textMap[status?.toLowerCase()] || "Pendente";
   };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="meeting-details-modal" onClick={e => e.stopPropagation()}>
+      <div
+        className="meeting-details-modal"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="modal-header">
           <div className="modal-title">
             <h2>{meeting.title}</h2>
@@ -41,7 +44,9 @@ const MeetingDetailsModal = ({ meeting, isOpen, onClose }) => {
               {getStatusText(meeting.status)}
             </span>
           </div>
-          <button className="close-modal" onClick={onClose}>×</button>
+          <button className="close-modal" onClick={onClose}>
+            ×
+          </button>
         </div>
 
         <div className="modal-body">
@@ -67,7 +72,9 @@ const MeetingDetailsModal = ({ meeting, isOpen, onClose }) => {
                 <span className="icon">👥</span>
                 <span>Participantes</span>
               </div>
-              <div className="detail-value">{meeting.participants || 'Não especificado'}</div>
+              <div className="detail-value">
+                {meeting.participants || "Não especificado"}
+              </div>
             </div>
 
             <div className="detail-item">
@@ -75,7 +82,9 @@ const MeetingDetailsModal = ({ meeting, isOpen, onClose }) => {
                 <span className="icon">📍</span>
                 <span>Local</span>
               </div>
-              <div className="detail-value">{meeting.location || 'A definir'}</div>
+              <div className="detail-value">
+                {meeting.location || "A definir"}
+              </div>
             </div>
           </div>
 
@@ -160,12 +169,12 @@ const MeetingCard = ({ meeting, onEdit, onDelete, onViewDetails }) => {
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString('pt-BR', {
-        weekday: 'short',
-        day: 'numeric',
-        month: 'short',
-        hour: '2-digit',
-        minute: '2-digit'
+      return date.toLocaleDateString("pt-BR", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
       });
     } catch (error) {
       return dateString;
@@ -174,20 +183,20 @@ const MeetingCard = ({ meeting, onEdit, onDelete, onViewDetails }) => {
 
   const getStatusClass = (status) => {
     const statusMap = {
-      'confirmado': 'status-confirmed',
-      'pendente': 'status-pending',
-      'cancelado': 'status-cancelled'
+      confirmado: "status-confirmed",
+      pendente: "status-pending",
+      cancelado: "status-cancelled",
     };
-    return statusMap[status?.toLowerCase()] || 'status-pending';
+    return statusMap[status?.toLowerCase()] || "status-pending";
   };
 
   const getStatusText = (status) => {
     const textMap = {
-      'confirmado': 'CONFIRMADO',
-      'pendente': 'PENDENTE',
-      'cancelado': 'CANCELADO'
+      confirmado: "CONFIRMADO",
+      pendente: "PENDENTE",
+      cancelado: "CANCELADO",
     };
-    return textMap[status?.toLowerCase()] || 'PENDENTE';
+    return textMap[status?.toLowerCase()] || "PENDENTE";
   };
 
   return (
@@ -197,18 +206,26 @@ const MeetingCard = ({ meeting, onEdit, onDelete, onViewDetails }) => {
           {getStatusText(meeting.status)}
         </div>
         <div className="card-actions-menu">
-          <button className="icon-btn" onClick={() => onEdit(meeting)} title="Editar">
+          <button
+            className="icon-btn"
+            onClick={() => onEdit(meeting)}
+            title="Editar"
+          >
             ✏️
           </button>
-          <button className="icon-btn" onClick={() => onDelete(meeting.id)} title="Excluir">
+          <button
+            className="icon-btn"
+            onClick={() => onDelete(meeting.id)}
+            title="Excluir"
+          >
             🗑️
           </button>
         </div>
       </div>
-      
+
       <div className="card-content">
         <h3 className="meeting-title">{meeting.title}</h3>
-        
+
         <div className="meeting-info">
           <div className="info-item">
             <span className="icon">📅</span>
@@ -225,14 +242,14 @@ const MeetingCard = ({ meeting, onEdit, onDelete, onViewDetails }) => {
             </div>
           )}
         </div>
-        
+
         {meeting.description && (
           <p className="meeting-description">{meeting.description}</p>
         )}
       </div>
-      
+
       <div className="card-footer">
-        <button 
+        <button
           className="btn-view-agenda"
           onClick={() => onViewDetails(meeting)}
         >
@@ -256,15 +273,17 @@ const NewMeetingModal = ({ isOpen, onClose, onSave, initialData }) => {
     status: "pendente",
     location: "",
     agendaItems: [],
-    attachments: []
+    attachments: [],
   });
 
   useEffect(() => {
     if (initialData) {
       // Se estiver editando, preenche o formulário com os dados existentes
-      const date = initialData.date ? initialData.date.split('T')[0] : "";
-      const time = initialData.date ? initialData.date.split('T')[1]?.substring(0, 5) : "";
-      
+      const date = initialData.date ? initialData.date.split("T")[0] : "";
+      const time = initialData.date
+        ? initialData.date.split("T")[1]?.substring(0, 5)
+        : "";
+
       setFormData({
         title: initialData.title || "",
         date: date,
@@ -275,7 +294,7 @@ const NewMeetingModal = ({ isOpen, onClose, onSave, initialData }) => {
         status: initialData.status || "pendente",
         location: initialData.location || "",
         agendaItems: initialData.agendaItems || [],
-        attachments: initialData.attachments || []
+        attachments: initialData.attachments || [],
       });
     } else {
       // Se for nova pauta, reseta o formulário
@@ -289,22 +308,22 @@ const NewMeetingModal = ({ isOpen, onClose, onSave, initialData }) => {
         status: "pendente",
         location: "",
         agendaItems: [],
-        attachments: []
+        attachments: [],
       });
     }
   }, [initialData, isOpen]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     // Formatar data e hora
     const dateTime = `${formData.date}T${formData.time}:00`;
-    
+
     const meetingData = {
       id: initialData ? initialData.id : Date.now(),
       title: formData.title,
@@ -315,7 +334,7 @@ const NewMeetingModal = ({ isOpen, onClose, onSave, initialData }) => {
       participants: parseInt(formData.participants),
       location: formData.location,
       agendaItems: formData.agendaItems,
-      attachments: formData.attachments
+      attachments: formData.attachments,
     };
 
     onSave(meetingData);
@@ -326,12 +345,14 @@ const NewMeetingModal = ({ isOpen, onClose, onSave, initialData }) => {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>{initialData ? "Editar Pauta" : "Nova Pauta"}</h2>
-          <button className="close-modal" onClick={onClose}>×</button>
+          <button className="close-modal" onClick={onClose}>
+            ×
+          </button>
         </div>
-        
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Título da Reunião *</label>
@@ -356,7 +377,7 @@ const NewMeetingModal = ({ isOpen, onClose, onSave, initialData }) => {
                 required
               />
             </div>
-            
+
             <div className="form-group">
               <label>Hora *</label>
               <input
@@ -393,10 +414,14 @@ const NewMeetingModal = ({ isOpen, onClose, onSave, initialData }) => {
                 max="50"
               />
             </div>
-            
+
             <div className="form-group">
               <label>Status</label>
-              <select name="status" value={formData.status} onChange={handleChange}>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+              >
                 <option value="pendente">Pendente</option>
                 <option value="confirmado">Confirmado</option>
               </select>
@@ -465,19 +490,20 @@ export default function WeeklyAgenda() {
           date: "2025-12-06T10:00:00",
           owner: "Diretor A",
           status: "pendente",
-          description: "Revisão das operações semanais e definição de metas para o próximo período.",
+          description:
+            "Revisão das operações semanais e definição de metas para o próximo período.",
           participants: 5,
           location: "Sala de Reuniões Principal",
           agendaItems: [
             "Análise das métricas semanais",
             "Definição de novas metas",
             "Distribuição de tarefas",
-            "Próximos passos"
+            "Próximos passos",
           ],
           attachments: [
             { name: "Métricas_Semanais.pdf", url: "#" },
-            { name: "Apresentação_Resultados.pptx", url: "#" }
-          ]
+            { name: "Apresentação_Resultados.pptx", url: "#" },
+          ],
         },
         {
           id: 2,
@@ -485,14 +511,15 @@ export default function WeeklyAgenda() {
           date: "2025-12-07T14:30:00",
           owner: "Gerente B",
           status: "confirmado",
-          description: "Análise detalhada dos KPIs do trimestre e ajustes estratégicos.",
+          description:
+            "Análise detalhada dos KPIs do trimestre e ajustes estratégicos.",
           participants: 3,
           location: "Sala de Videoconferência",
           agendaItems: [
             "Apresentação dos resultados",
             "Análise comparativa com trimestre anterior",
-            "Definição de ajustes necessários"
-          ]
+            "Definição de ajustes necessários",
+          ],
         },
         {
           id: 3,
@@ -500,16 +527,17 @@ export default function WeeklyAgenda() {
           date: "2025-12-08T09:00:00",
           owner: "CEO",
           status: "pendente",
-          description: "Planejamento estratégico para o próximo trimestre com foco em expansão.",
+          description:
+            "Planejamento estratégico para o próximo trimestre com foco em expansão.",
           participants: 8,
           location: "Auditório",
           agendaItems: [
             "Revisão do plano atual",
             "Definição de novas metas trimestrais",
             "Alocação de recursos",
-            "Cronograma de implementação"
-          ]
-        }
+            "Cronograma de implementação",
+          ],
+        },
       ]);
     } finally {
       setLoading(false);
@@ -517,12 +545,12 @@ export default function WeeklyAgenda() {
   };
 
   const handleAddMeeting = (newMeeting) => {
-    setMeetings(prev => [...prev, newMeeting]);
+    setMeetings((prev) => [...prev, newMeeting]);
   };
 
   const handleEditMeeting = (updatedMeeting) => {
-    setMeetings(prev => 
-      prev.map(meeting => 
+    setMeetings((prev) =>
+      prev.map((meeting) =>
         meeting.id === updatedMeeting.id ? updatedMeeting : meeting
       )
     );
@@ -532,7 +560,7 @@ export default function WeeklyAgenda() {
 
   const handleDeleteMeeting = (id) => {
     if (window.confirm("Tem certeza que deseja excluir esta pauta?")) {
-      setMeetings(prev => prev.filter(meeting => meeting.id !== id));
+      setMeetings((prev) => prev.filter((meeting) => meeting.id !== id));
     }
   };
 
@@ -554,8 +582,8 @@ export default function WeeklyAgenda() {
     }
   };
 
-  const confirmedMeetings = meetings.filter(m => m.status === 'confirmado');
-  const pendingMeetings = meetings.filter(m => m.status === 'pendente');
+  const confirmedMeetings = meetings.filter((m) => m.status === "confirmado");
+  const pendingMeetings = meetings.filter((m) => m.status === "pendente");
 
   return (
     <div className="weekly-agenda-container">
@@ -577,8 +605,8 @@ export default function WeeklyAgenda() {
             </span>
           </div>
         </div>
-        
-        <button 
+
+        <button
           className="btn-new-meeting"
           onClick={() => {
             setEditingMeeting(null);
@@ -604,11 +632,13 @@ export default function WeeklyAgenda() {
                   <span className="section-icon">✅</span>
                   Confirmadas
                 </h2>
-                <span className="section-count">{confirmedMeetings.length}</span>
+                <span className="section-count">
+                  {confirmedMeetings.length}
+                </span>
               </div>
-              
+
               <div className="meetings-grid">
-                {confirmedMeetings.map(meeting => (
+                {confirmedMeetings.map((meeting) => (
                   <MeetingCard
                     key={meeting.id}
                     meeting={meeting}
@@ -630,9 +660,9 @@ export default function WeeklyAgenda() {
                 </h2>
                 <span className="section-count">{pendingMeetings.length}</span>
               </div>
-              
+
               <div className="meetings-grid">
-                {pendingMeetings.map(meeting => (
+                {pendingMeetings.map((meeting) => (
                   <MeetingCard
                     key={meeting.id}
                     meeting={meeting}
@@ -650,7 +680,7 @@ export default function WeeklyAgenda() {
               <div className="empty-icon">📅</div>
               <h3>Nenhuma pauta esta semana</h3>
               <p>Comece criando sua primeira pauta de reunião.</p>
-              <button 
+              <button
                 className="btn-new-meeting"
                 onClick={() => setIsNewMeetingModalOpen(true)}
               >

@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String, DateTime, Text, Boolean, Foreign
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
-from .session import Base
+from session import Base
 
 # ⚠️ REMOVER a classe User daqui - Ela já existe em backend/models/user.py
 # class User(Base):  # COMENTE OU REMOVA ESTA CLASSE

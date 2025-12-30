@@ -1,15 +1,15 @@
 # backend/integrations/whatsapp/router.py
 
-from fastapi import APIRouter, Request, HTTPException
-from fastapi.responses import JSONResponse
+from  fastapi import APIRouter, Request, HTTPException
+from  fastapi.responses import JSONResponse
 
 # IMPORTAÇÕES CORRETAS (antes estavam erradas!)
-from backend.integrations.whatsapp.models import Conversation, WAmessage
-from backend.integrations.whatsapp import service
-from backend.database.session import SessionLocal
+from integrations.whatsapp.models import Conversation, WAmessage
+from integrations.whatsapp import service
+from database.session import SessionLocal
 
-from pydantic import BaseModel
-from datetime import datetime
+from  pydantic import BaseModel
+from  datetime import datetime
 
 router = APIRouter(prefix="/whatsapp", tags=["WhatsApp"])
 
@@ -86,7 +86,7 @@ async def zenvia_webhook(request: Request):
 
     try:
         msg = body["message"]
-        sender = msg["from"]
+        sender = msg["from "]
         msg_id = msg["id"]
 
         text = ""

@@ -1,9 +1,9 @@
 # backend/models/wa_message.py
-from sqlalchemy import Column, Integer, String, DateTime, Text, Boolean, ForeignKey, Enum
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
+from  sqlalchemy import Column, Integer, String, DateTime, Text, Boolean, ForeignKey, Enum
+from  sqlalchemy.orm import relationship
+from  sqlalchemy.sql import func
 import enum
-from backend.database.session import Base
+from database.session import Base
 
 class MessageType(enum.Enum):
     TEXT = "text"

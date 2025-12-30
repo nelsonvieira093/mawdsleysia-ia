@@ -1,7 +1,7 @@
 import json
 import os
 import numpy as np
-from openai import OpenAI
+from  openai import OpenAI
 
 client = OpenAI()
 

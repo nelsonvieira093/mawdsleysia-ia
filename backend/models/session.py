@@ -1,8 +1,8 @@
 # backend/models/session.py - COM extend_existing
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
-from backend.database.session import Base
+from  sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from  sqlalchemy.orm import relationship
+from  sqlalchemy.sql import func
+from  database.session import Base
 
 class Session(Base):
     __tablename__ = "sessions"

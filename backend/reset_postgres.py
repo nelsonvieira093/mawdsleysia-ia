@@ -1,13 +1,13 @@
 # backend/reset_postgres.py
 import sys
 import os
-from pathlib import Path
+from  pathlib import Path
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from backend.database.session import engine, Base
-from backend.security.password import hash_password
-from sqlalchemy import text
+from database.session import engine, Base
+from security.password import hash_password
+from  sqlalchemy import text
 
 def reset_database():
     """Recria banco do zero (PERIGO: apaga todos os dados!)"""

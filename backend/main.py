@@ -9,6 +9,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 import openai
+from api.routes.kpis import router as kpis_router
+
+
+
+
 
 # =====================================================
 # PATHS
@@ -26,11 +31,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
 if not OPENAI_API_KEY or len(OPENAI_API_KEY) < 20:
     raise RuntimeError("❌ OPENAI_API_KEY não encontrada ou inválida")
 
-# SDK CLÁSSICO (ESTÁVEL)
 openai.api_key = OPENAI_API_KEY
 print("🤖 OpenAI configurada com sucesso (SDK CLÁSSICO)")
 
@@ -44,7 +47,7 @@ async def lifespan(app: FastAPI):
     print("👋 Encerrando aplicação...")
 
 # =====================================================
-# APP
+# APP (ÚNICO)
 # =====================================================
 app = FastAPI(
     title="MAWDSLEYS API",
@@ -82,13 +85,19 @@ async def health():
     }
 
 # =====================================================
-# API ROUTER
+# ROUTERS
 # =====================================================
-api = APIRouter(prefix="/api")
+from api.routes.ingest import router as ingest_router
+from api.routes.agenda import router as agenda_router
+
+app.include_router(ingest_router, prefix="/api")
+app.include_router(agenda_router)
+app.include_router(kpis_router, prefix="/api") 
 
 # =====================================================
-# CHAT — IA REAL (ESTÁVEL)
+# CHAT
 # =====================================================
+api = APIRouter(prefix="/api")
 chat = APIRouter(prefix="/chat", tags=["Chat"])
 
 class ChatRequest(BaseModel):
@@ -96,11 +105,7 @@ class ChatRequest(BaseModel):
 
 @chat.get("/health")
 async def chat_health():
-    return {
-        "status": "online",
-        "openai": True,
-        "mode": "ai"
-    }
+    return {"status": "online", "openai": True}
 
 @chat.post("/")
 async def chat_handler(data: ChatRequest):
@@ -108,36 +113,16 @@ async def chat_handler(data: ChatRequest):
         response = openai.ChatCompletion.create(
             model="gpt-4o-mini",
             messages=[
-                {
-                    "role": "system",
-                    "content": "Você é o assistente corporativo MAWDSLEYS. Seja profissional, claro e objetivo."
-                },
-                {
-                    "role": "user",
-                    "content": data.message
-                }
+                {"role": "system", "content": "Você é o assistente corporativo MAWDSLEYS."},
+                {"role": "user", "content": data.message}
             ],
             temperature=0.4,
             max_tokens=800
         )
+        return {"reply": response.choices[0].message["content"]}
+    except Exception:
+        raise HTTPException(status_code=500, detail="Erro OpenAI")
 
-        return {
-            "reply": response.choices[0].message["content"],
-            "model": "gpt-4o-mini",
-            "mode": "ai",
-            "timestamp": datetime.utcnow().isoformat()
-        }
-
-    except Exception as e:
-        print("❌ ERRO OPENAI:", e)
-        raise HTTPException(
-            status_code=500,
-            detail="Erro ao processar mensagem com OpenAI"
-        )
-
-# =====================================================
-# INCLUDE ROUTERS
-# =====================================================
 api.include_router(chat)
 app.include_router(api)
 
@@ -147,8 +132,4 @@ print("✅ MAWDSLEYS API pronta com IA REAL (ONLINE)")
 # RUN
 # =====================================================
 if __name__ == "__main__":
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=8000
-    )
+    uvicorn.run("main:app", host="0.0.0.0", port=8000)

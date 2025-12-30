@@ -193,7 +193,7 @@ def create_tables():
         with engine.connect() as conn:
             tables = conn.execute(text("""
                 SELECT table_name 
-                FROM information_schema.tables 
+                from  information_schema.tables 
                 WHERE table_schema = 'public'
                 ORDER BY table_name
             """)).fetchall()

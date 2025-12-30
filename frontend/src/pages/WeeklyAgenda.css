@@ -495,7 +495,7 @@
 
 /* Animações */
 @keyframes fadeIn {
-  from {
+  from  {
     opacity: 0;
     transform: translateY(10px);
   }

@@ -1,4 +1,3 @@
-
 //E:\MAWDSLEYS-AGENTE\frontend\src\pages\Deliverables.jsx
 
 import React, { useEffect, useState } from "react";
@@ -19,9 +18,9 @@ const NewDeliverableModal = ({ isOpen, onClose, onSave }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ 
-      ...prev, 
-      [name]: name === "progresso" ? parseInt(value) : value 
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "progresso" ? parseInt(value) : value,
     }));
   };
 
@@ -30,7 +29,7 @@ const NewDeliverableModal = ({ isOpen, onClose, onSave }) => {
     const newDeliverable = {
       id: Date.now(),
       ...formData,
-      dataCriacao: new Date().toISOString().split('T')[0]
+      dataCriacao: new Date().toISOString().split("T")[0],
     };
     onSave(newDeliverable);
     setFormData({
@@ -52,9 +51,11 @@ const NewDeliverableModal = ({ isOpen, onClose, onSave }) => {
       <div className="modal-content">
         <div className="modal-header">
           <h2>Novo Entregável</h2>
-          <button className="close-btn" onClick={onClose}>×</button>
+          <button className="close-btn" onClick={onClose}>
+            ×
+          </button>
         </div>
-        
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Título *</label>
@@ -98,7 +99,7 @@ const NewDeliverableModal = ({ isOpen, onClose, onSave }) => {
                 <option value="Design">Design</option>
               </select>
             </div>
-            
+
             <div className="form-group">
               <label>Prazo *</label>
               <input
@@ -107,7 +108,7 @@ const NewDeliverableModal = ({ isOpen, onClose, onSave }) => {
                 value={formData.prazo}
                 onChange={handleChange}
                 required
-                min={new Date().toISOString().split('T')[0]}
+                min={new Date().toISOString().split("T")[0]}
               />
             </div>
           </div>
@@ -115,16 +116,24 @@ const NewDeliverableModal = ({ isOpen, onClose, onSave }) => {
           <div className="form-row">
             <div className="form-group">
               <label>Prioridade</label>
-              <select name="prioridade" value={formData.prioridade} onChange={handleChange}>
+              <select
+                name="prioridade"
+                value={formData.prioridade}
+                onChange={handleChange}
+              >
                 <option value="baixa">Baixa</option>
                 <option value="media">Média</option>
                 <option value="alta">Alta</option>
               </select>
             </div>
-            
+
             <div className="form-group">
               <label>Status</label>
-              <select name="status" value={formData.status} onChange={handleChange}>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+              >
                 <option value="pendente">Pendente</option>
                 <option value="em_andamento">Em Andamento</option>
                 <option value="concluido">Concluído</option>
@@ -166,28 +175,36 @@ const DetalhesModal = ({ isOpen, onClose, entregavel, onEditar }) => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
+    return date.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
     });
   };
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'concluido': return 'Concluído';
-      case 'em_andamento': return 'Em Andamento';
-      case 'pendente': return 'Pendente';
-      default: return 'Pendente';
+      case "concluido":
+        return "Concluído";
+      case "em_andamento":
+        return "Em Andamento";
+      case "pendente":
+        return "Pendente";
+      default:
+        return "Pendente";
     }
   };
 
   const getPriorityText = (prioridade) => {
     switch (prioridade) {
-      case 'alta': return 'Alta';
-      case 'media': return 'Média';
-      case 'baixa': return 'Baixa';
-      default: return 'Média';
+      case "alta":
+        return "Alta";
+      case "media":
+        return "Média";
+      case "baixa":
+        return "Baixa";
+      default:
+        return "Média";
     }
   };
 
@@ -196,30 +213,34 @@ const DetalhesModal = ({ isOpen, onClose, entregavel, onEditar }) => {
       <div className="modal-content">
         <div className="modal-header">
           <h2>Detalhes do Entregável</h2>
-          <button className="close-btn" onClick={onClose}>×</button>
+          <button className="close-btn" onClick={onClose}>
+            ×
+          </button>
         </div>
-        
+
         <div className="modal-body-detalhes">
           <h3>{entregavel.title}</h3>
-          
+
           <div className="detalhes-grid">
             <div className="detalhe-item">
               <span className="detalhe-label">Responsável:</span>
               <span className="detalhe-value">{entregavel.responsavel}</span>
             </div>
-            
+
             <div className="detalhe-item">
               <span className="detalhe-label">Status:</span>
               <span className={`status-badge ${entregavel.status}`}>
                 {getStatusText(entregavel.status)}
               </span>
             </div>
-            
+
             <div className="detalhe-item">
               <span className="detalhe-label">Prazo:</span>
-              <span className="detalhe-value">{formatDate(entregavel.prazo)}</span>
+              <span className="detalhe-value">
+                {formatDate(entregavel.prazo)}
+              </span>
             </div>
-            
+
             <div className="detalhe-item">
               <span className="detalhe-label">Prioridade:</span>
               <span className={`priority-badge ${entregavel.prioridade}`}>
@@ -227,35 +248,31 @@ const DetalhesModal = ({ isOpen, onClose, entregavel, onEditar }) => {
               </span>
             </div>
           </div>
-          
+
           <div className="descricao-container">
             <h4>Descrição</h4>
             <p>{entregavel.description}</p>
           </div>
-          
+
           <div className="progresso-container">
             <div className="progresso-header">
               <span>Progresso</span>
               <span>{entregavel.progresso}%</span>
             </div>
             <div className="progress-bar">
-              <div 
+              <div
                 className="progress-fill"
                 style={{ width: `${entregavel.progresso}%` }}
               ></div>
             </div>
           </div>
-          
+
           <div className="modal-actions">
-            <button 
-              type="button" 
-              className="btn-cancel" 
-              onClick={onClose}
-            >
+            <button type="button" className="btn-cancel" onClick={onClose}>
               Fechar
             </button>
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="btn-save"
               onClick={() => {
                 onClose();
@@ -275,7 +292,7 @@ const DetalhesModal = ({ isOpen, onClose, entregavel, onEditar }) => {
 export default function Deliverables() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('todos'); // 'todos', 'pendentes', 'em_andamento', 'concluidos'
+  const [activeTab, setActiveTab] = useState("todos"); // 'todos', 'pendentes', 'em_andamento', 'concluidos'
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetalhesModalOpen, setIsDetalhesModalOpen] = useState(false);
   const [entregavelSelecionado, setEntregavelSelecionado] = useState(null);
@@ -292,7 +309,7 @@ export default function Deliverables() {
       status: "pendente",
       prioridade: "alta",
       progresso: 30,
-      dataCriacao: "2025-11-25"
+      dataCriacao: "2025-11-25",
     },
     {
       id: 2,
@@ -303,7 +320,7 @@ export default function Deliverables() {
       status: "em_andamento",
       prioridade: "media",
       progresso: 65,
-      dataCriacao: "2025-11-20"
+      dataCriacao: "2025-11-20",
     },
     {
       id: 3,
@@ -314,7 +331,7 @@ export default function Deliverables() {
       status: "concluido",
       prioridade: "alta",
       progresso: 100,
-      dataCriacao: "2025-11-15"
+      dataCriacao: "2025-11-15",
     },
     {
       id: 4,
@@ -325,7 +342,7 @@ export default function Deliverables() {
       status: "pendente",
       prioridade: "media",
       progresso: 10,
-      dataCriacao: "2025-11-28"
+      dataCriacao: "2025-11-28",
     },
     {
       id: 5,
@@ -336,8 +353,8 @@ export default function Deliverables() {
       status: "em_andamento",
       prioridade: "alta",
       progresso: 45,
-      dataCriacao: "2025-11-22"
-    }
+      dataCriacao: "2025-11-22",
+    },
   ];
 
   useEffect(() => {
@@ -348,20 +365,26 @@ export default function Deliverables() {
     try {
       const res = await api.get("/followups/");
       console.log("API Response:", res.data);
-      
+
       // Se a API retornar dados, use-os
       if (res.data && res.data.length > 0) {
         // Normalizar os dados da API para o formato esperado
-        const dadosApi = res.data.map(item => ({
+        const dadosApi = res.data.map((item) => ({
           id: item.id || item._id || Date.now(),
           title: item.title || item.nome || "Sem título",
           description: item.description || item.descricao || "",
           responsavel: item.responsavel || item.responsible || "Não definido",
-          prazo: item.prazo || item.due_date || new Date().toISOString().split('T')[0],
+          prazo:
+            item.prazo ||
+            item.due_date ||
+            new Date().toISOString().split("T")[0],
           status: item.status || "pendente",
           prioridade: item.prioridade || item.priority || "media",
           progresso: item.progresso || item.progress || 0,
-          dataCriacao: item.dataCriacao || item.createdAt || new Date().toISOString().split('T')[0]
+          dataCriacao:
+            item.dataCriacao ||
+            item.createdAt ||
+            new Date().toISOString().split("T")[0],
         }));
         setItems(dadosApi);
       } else {
@@ -380,7 +403,7 @@ export default function Deliverables() {
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString('pt-BR');
+      return date.toLocaleDateString("pt-BR");
     } catch (e) {
       return dateString;
     }
@@ -388,47 +411,64 @@ export default function Deliverables() {
 
   const getStatusClass = (status) => {
     switch (status) {
-      case 'concluido': return 'status-completed';
-      case 'em_andamento': return 'status-in-progress';
-      case 'pendente': return 'status-pending';
-      default: return 'status-pending';
+      case "concluido":
+        return "status-completed";
+      case "em_andamento":
+        return "status-in-progress";
+      case "pendente":
+        return "status-pending";
+      default:
+        return "status-pending";
     }
   };
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'concluido': return 'Concluído';
-      case 'em_andamento': return 'Em Andamento';
-      case 'pendente': return 'Pendente';
-      default: return 'Pendente';
+      case "concluido":
+        return "Concluído";
+      case "em_andamento":
+        return "Em Andamento";
+      case "pendente":
+        return "Pendente";
+      default:
+        return "Pendente";
     }
   };
 
   const getPriorityClass = (prioridade) => {
     switch (prioridade) {
-      case 'alta': return 'priority-high';
-      case 'media': return 'priority-medium';
-      case 'baixa': return 'priority-low';
-      default: return 'priority-medium';
+      case "alta":
+        return "priority-high";
+      case "media":
+        return "priority-medium";
+      case "baixa":
+        return "priority-low";
+      default:
+        return "priority-medium";
     }
   };
 
   const getPriorityText = (prioridade) => {
     switch (prioridade) {
-      case 'alta': return 'Alta';
-      case 'media': return 'Média';
-      case 'baixa': return 'Baixa';
-      default: return 'Média';
+      case "alta":
+        return "Alta";
+      case "media":
+        return "Média";
+      case "baixa":
+        return "Baixa";
+      default:
+        return "Média";
     }
   };
 
   // Filtrar itens pela aba ativa e busca
-  const filteredItems = items.filter(item => {
+  const filteredItems = items.filter((item) => {
     // Filtro por status
-    if (activeTab === 'pendentes' && item.status !== 'pendente') return false;
-    if (activeTab === 'em_andamento' && item.status !== 'em_andamento') return false;
-    if (activeTab === 'concluidos' && item.status !== 'concluido') return false;
-    
+    if (activeTab === "pendentes" && item.status !== "pendente") return false;
+    if (activeTab === "em_andamento" && item.status !== "em_andamento")
+      return false;
+    if (activeTab === "concluidos" && item.status !== "concluido") return false;
+
     // Filtro por busca
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
@@ -438,17 +478,17 @@ export default function Deliverables() {
         item.responsavel.toLowerCase().includes(term)
       );
     }
-    
+
     return true;
   });
 
   const handleAddDeliverable = (newDeliverable) => {
-    setItems(prev => [...prev, newDeliverable]);
+    setItems((prev) => [...prev, newDeliverable]);
   };
 
   const handleUpdateDeliverable = (updatedDeliverable) => {
-    setItems(prev => 
-      prev.map(item => 
+    setItems((prev) =>
+      prev.map((item) =>
         item.id === updatedDeliverable.id ? updatedDeliverable : item
       )
     );
@@ -456,7 +496,7 @@ export default function Deliverables() {
 
   const handleDeleteDeliverable = (id) => {
     if (window.confirm("Tem certeza que deseja excluir este entregável?")) {
-      setItems(prev => prev.filter(item => item.id !== id));
+      setItems((prev) => prev.filter((item) => item.id !== id));
     }
   };
 
@@ -477,7 +517,7 @@ export default function Deliverables() {
           <h1>Entregáveis</h1>
           <p className="subtitle">Acompanhe os entregáveis por diretoria</p>
         </div>
-        
+
         <div className="header-right">
           <div className="stats">
             <div className="stat-item">
@@ -486,19 +526,19 @@ export default function Deliverables() {
             </div>
             <div className="stat-item">
               <span className="stat-number">
-                {items.filter(i => i.status === 'concluido').length}
+                {items.filter((i) => i.status === "concluido").length}
               </span>
               <span className="stat-label">Concluídos</span>
             </div>
             <div className="stat-item">
               <span className="stat-number">
-                {items.filter(i => i.status === 'pendente').length}
+                {items.filter((i) => i.status === "pendente").length}
               </span>
               <span className="stat-label">Pendentes</span>
             </div>
           </div>
-          
-          <button 
+
+          <button
             className="btn-new-deliverable"
             onClick={() => setIsModalOpen(true)}
           >
@@ -510,27 +550,27 @@ export default function Deliverables() {
 
       {/* Abas */}
       <div className="tabs-container">
-        <button 
-          className={`tab-btn ${activeTab === 'todos' ? 'active' : ''}`}
-          onClick={() => setActiveTab('todos')}
+        <button
+          className={`tab-btn ${activeTab === "todos" ? "active" : ""}`}
+          onClick={() => setActiveTab("todos")}
         >
           Todos
         </button>
-        <button 
-          className={`tab-btn ${activeTab === 'pendentes' ? 'active' : ''}`}
-          onClick={() => setActiveTab('pendentes')}
+        <button
+          className={`tab-btn ${activeTab === "pendentes" ? "active" : ""}`}
+          onClick={() => setActiveTab("pendentes")}
         >
           Pendentes
         </button>
-        <button 
-          className={`tab-btn ${activeTab === 'em_andamento' ? 'active' : ''}`}
-          onClick={() => setActiveTab('em_andamento')}
+        <button
+          className={`tab-btn ${activeTab === "em_andamento" ? "active" : ""}`}
+          onClick={() => setActiveTab("em_andamento")}
         >
           Em Andamento
         </button>
-        <button 
-          className={`tab-btn ${activeTab === 'concluidos' ? 'active' : ''}`}
-          onClick={() => setActiveTab('concluidos')}
+        <button
+          className={`tab-btn ${activeTab === "concluidos" ? "active" : ""}`}
+          onClick={() => setActiveTab("concluidos")}
         >
           Concluídos
         </button>
@@ -539,9 +579,9 @@ export default function Deliverables() {
       {/* Filtro de busca */}
       <div className="filters-container">
         <div className="search-box">
-          <input 
-            type="text" 
-            placeholder="Buscar por título, descrição ou responsável..." 
+          <input
+            type="text"
+            placeholder="Buscar por título, descrição ou responsável..."
             className="search-input"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -560,10 +600,10 @@ export default function Deliverables() {
           <div className="empty-icon">📦</div>
           <h3>Nenhum entregável encontrado</h3>
           <p>Tente alterar os filtros ou criar um novo entregável.</p>
-          <button 
+          <button
             className="btn-new-deliverable"
             onClick={() => setIsModalOpen(true)}
-            style={{ marginTop: '20px' }}
+            style={{ marginTop: "20px" }}
           >
             <span className="plus-icon">+</span>
             Criar Primeiro Entregável
@@ -575,19 +615,23 @@ export default function Deliverables() {
             <div key={item.id} className="deliverable-card">
               <div className="card-header">
                 <div className="card-top">
-                  <span className={`priority-badge ${getPriorityClass(item.prioridade)}`}>
+                  <span
+                    className={`priority-badge ${getPriorityClass(
+                      item.prioridade
+                    )}`}
+                  >
                     {getPriorityText(item.prioridade)}
                   </span>
                   <div className="card-actions">
-                    <button 
-                      className="icon-btn" 
+                    <button
+                      className="icon-btn"
                       title="Editar"
                       onClick={() => handleEditar(item)}
                     >
                       ✏️
                     </button>
-                    <button 
-                      className="icon-btn" 
+                    <button
+                      className="icon-btn"
                       title="Excluir"
                       onClick={() => handleDeleteDeliverable(item.id)}
                     >
@@ -595,33 +639,33 @@ export default function Deliverables() {
                     </button>
                   </div>
                 </div>
-                
+
                 <h3 className="deliverable-title">{item.title}</h3>
-                
+
                 <div className="deliverable-responsavel">
                   <span className="label">Responsável:</span>
                   <span className="value">{item.responsavel}</span>
                 </div>
               </div>
-              
+
               <div className="card-body">
                 {item.description && (
                   <p className="deliverable-description">{item.description}</p>
                 )}
-                
+
                 <div className="deliverable-details">
                   <div className="detail-item">
                     <span className="label">Prazo:</span>
                     <span className="value">{formatDate(item.prazo)}</span>
                   </div>
-                  
+
                   <div className="progress-container">
                     <div className="progress-label">
                       <span>Progresso</span>
                       <span>{item.progresso || 0}%</span>
                     </div>
                     <div className="progress-bar">
-                      <div 
+                      <div
                         className="progress-fill"
                         style={{ width: `${item.progresso || 0}%` }}
                       ></div>
@@ -629,20 +673,20 @@ export default function Deliverables() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="card-footer">
                 <div className={`status-badge ${getStatusClass(item.status)}`}>
                   {getStatusText(item.status)}
                 </div>
-                
+
                 <div className="footer-actions">
-                  <button 
+                  <button
                     className="btn-view"
                     onClick={() => handleVerDetalhes(item)}
                   >
                     Ver Detalhes
                   </button>
-                  <button 
+                  <button
                     className="btn-update"
                     onClick={() => handleEditar(item)}
                   >
@@ -664,7 +708,10 @@ export default function Deliverables() {
         }}
         onSave={(deliverable) => {
           if (entregavelSelecionado) {
-            handleUpdateDeliverable({ ...entregavelSelecionado, ...deliverable });
+            handleUpdateDeliverable({
+              ...entregavelSelecionado,
+              ...deliverable,
+            });
           } else {
             handleAddDeliverable(deliverable);
           }

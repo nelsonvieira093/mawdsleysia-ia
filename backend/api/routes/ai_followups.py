@@ -1,11 +1,11 @@
 # backend/api/routes/ai_followups.py
-from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
-from typing import Optional
+from  fastapi import APIRouter, HTTPException, Depends
+from  pydantic import BaseModel
+from  typing import Optional
 import os
-from datetime import datetime
+from  datetime import datetime
 
-from backend.middleware.auth import require_any_auth
+from ...middleware.auth import require_any_auth
 
 router = APIRouter(prefix="/ai/followups", tags=["AI FollowUps"])
 
@@ -36,7 +36,7 @@ async def generate_followup(
             tone_desc = tones.get(data.tone, "Profissional")
             
             demo_response = f"""
-í³‹ **FollowUp Sugerido ({tone_desc})**
+ï¿½ï¿½ï¿½ **FollowUp Sugerido ({tone_desc})**
 
 **Para:** {data.responsible}
 **Tarefa:** {data.task}
@@ -66,7 +66,7 @@ Equipe MAWDSLEYS
         
         # IA real
         try:
-            from backend.agents.followup_agent import generate_followup as ai_generate
+            from agents.followup_agent import generate_followup as ai_generate
             response = ai_generate(data.task, data.responsible)
         except ImportError:
             # Fallback bÃ¡sico

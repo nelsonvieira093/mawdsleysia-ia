@@ -129,3 +129,73 @@ flyctl deploy --remote-only --no-cache -a backend-green-feather-7102
 cd E:\MAWDSLEYS-AGENTE\backend
 flyctl deploy --remote-only --no-cache -a backend-green-feather-7102
 
+
+
+
+1️⃣ Instalar Vercel CLI (se ainda não tiver)
+npm i -g vercel
+
+2️⃣ Entrar no frontend
+cd E:\MAWDSLEYS-AGENTE\frontend
+
+3️⃣ Login
+vercel login
+
+4️⃣ Deploy produção
+vercel --prod
+
+
+Durante o processo:
+
+✔ Project: selecione o projeto existente
+
+✔ Framework: Vite
+
+✔ Build command: npm run build
+
+✔ Output: dist
+
+📌 
+
+
+# MAWDSLEYS Executive OS — v1.0
+
+Sistema corporativo de ingestão inteligente, memória operacional e automação de follow-ups com IA.
+
+
+## 🚀 Visão Geral
+
+O MAWDSLEYS Executive OS permite:
+- Ingestão de texto com análise por IA
+- Persistência estruturada em PostgreSQL
+- Criação automática de follow-ups
+- Agenda dinâmica por rito
+- KPIs operacionais
+
+---
+
+## 🧱 Stack Tecnológica
+
+- FastAPI
+- PostgreSQL
+- SQLAlchemy
+- OpenAI API
+- Python 3.11+
+- (Frontend opcional em Vite / React)
+
+---
+
+## 📁 Estrutura do Projeto
+
+
+
+Isso cria um novo deploy direto, ignorando o GitHub.
+
+Vercel 
+Build command: npm run build
+
+ative o virtualenv
+source venv/Scripts/activate
+
+
+uvicorn main:app --reload

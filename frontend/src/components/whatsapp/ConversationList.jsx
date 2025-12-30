@@ -9,9 +9,7 @@ export default function ConversationList({ conversations, active, onSelect }) {
       {conversations.map((c) => (
         <div
           key={c.id}
-          className={`wa-conversation-item ${
-            active === c.id ? "active" : ""
-          }`}
+          className={`wa-conversation-item ${active === c.id ? "active" : ""}`}
           onClick={() => onSelect(c.id)}
         >
           <div className="wa-conversation-name">{c.name}</div>

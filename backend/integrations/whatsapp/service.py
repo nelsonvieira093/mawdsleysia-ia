@@ -1,11 +1,11 @@
 import os
 import logging
 import requests
-from datetime import datetime
+from  datetime import datetime
 
 # IMPORTAÇÃO CORRETA (com backend antes de 'integrations' e 'database')
-from backend.integrations.whatsapp.models import Conversation, WAmessage
-from backend.database.session import SessionLocal
+from integrations.whatsapp.models import Conversation, WAmessage
+from database.session import SessionLocal
 
 logger = logging.getLogger("whatsapp_service")
 
@@ -142,7 +142,7 @@ def send_message_to_provider(to: str, text: str):
     }
 
     payload = {
-        "from": ZENVIA_CHANNEL_ID,
+        "from ": ZENVIA_CHANNEL_ID,
         "to": to,
         "contents": [
             {

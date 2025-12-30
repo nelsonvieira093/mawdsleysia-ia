@@ -1,11 +1,11 @@
 # backend/api/routes/ceo.py
-from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
-from typing import Optional, List
+from  fastapi import APIRouter, HTTPException, Depends
+from  pydantic import BaseModel
+from  typing import Optional, List
 import os
-from datetime import datetime
+from  datetime import datetime
 
-from backend.middleware.auth import require_any_auth
+from middleware.auth import require_any_auth
 
 router = APIRouter(prefix="/ceo", tags=["CEO Agent"])
 
@@ -27,7 +27,7 @@ async def ask_ceo(
         # Verificar se OpenAI estÃ¡ configurada
         if not os.getenv("OPENAI_API_KEY"):
             return {
-                "reply": "í´– **CEO Agent (Modo Demo)**\n\n"
+                "reply": "ï¿½ï¿½ï¿½ **CEO Agent (Modo Demo)**\n\n"
                         f"**Pergunta:** {data.question}\n\n"
                         "Para usar a IA real, adicione OPENAI_API_KEY no arquivo .env\n"
                         "Obtenha uma chave em: https://platform.openai.com/api-keys",
@@ -39,7 +39,7 @@ async def ask_ceo(
         
         # Tentar importar o agente CEO
         try:
-            from backend.agents.ceo_agent import run_ceo_agent
+            from agents.ceo_agent import run_ceo_agent
             response = run_ceo_agent(data.question)
             
             return {

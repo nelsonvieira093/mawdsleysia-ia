@@ -1,8 +1,8 @@
 # backend/models/wa_conversation.py
-from sqlalchemy import Column, Integer, String, DateTime, Text, Boolean, ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
-from backend.database.session import Base
+from  sqlalchemy import Column, Integer, String, DateTime, Text, Boolean, ForeignKey
+from  sqlalchemy.orm import relationship
+from  sqlalchemy.sql import func
+from database.session import Base
 
 class WAConversation(Base):
     __tablename__ = "wa_conversations"

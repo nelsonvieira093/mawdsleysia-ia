@@ -1,5 +1,5 @@
 # backend/security/password.py
-from passlib.context import CryptContext
+from  passlib.context import CryptContext
 
 # Configuração CORRETA do bcrypt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

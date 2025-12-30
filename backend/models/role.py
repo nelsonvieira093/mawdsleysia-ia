@@ -1,7 +1,7 @@
 # backend/models/role.py - COM extend_existing
-from sqlalchemy import Column, Integer, String, Text
-from sqlalchemy.orm import relationship
-from backend.database.session import Base
+from  sqlalchemy import Column, Integer, String, Text
+from  sqlalchemy.orm import relationship
+from  database.session import Base
 
 class Role(Base):
     __tablename__ = "roles"

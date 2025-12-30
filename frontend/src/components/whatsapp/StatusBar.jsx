@@ -24,10 +24,7 @@ export default function StatusBar({ data }) {
       <div className="status-right">
         <span className="status-last-update">Atualizado: {lastUpdate}</span>
 
-        <button
-          className="status-btn"
-          onClick={() => window.location.reload()}
-        >
+        <button className="status-btn" onClick={() => window.location.reload()}>
           Atualizar
         </button>
       </div>

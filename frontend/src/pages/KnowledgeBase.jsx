@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import api from "../services/api";
 
-
 export default function KnowledgeBase() {
   const [docs, setDocs] = useState([]);
 

@@ -48,13 +48,13 @@ export default function MeetingDetails() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return date.toLocaleDateString("pt-BR", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -66,7 +66,7 @@ export default function MeetingDetails() {
         </button>
         <h1>{meeting.title}</h1>
         <div className={`status-badge ${meeting.status}`}>
-          {meeting.status === 'confirmado' ? 'CONFIRMADO' : 'PENDENTE'}
+          {meeting.status === "confirmado" ? "CONFIRMADO" : "PENDENTE"}
         </div>
       </div>
 
@@ -83,12 +83,12 @@ export default function MeetingDetails() {
 
         <div className="details-card">
           <h3>👥 Participantes</h3>
-          <p>{meeting.participants || 'Não informado'}</p>
+          <p>{meeting.participants || "Não informado"}</p>
         </div>
 
         <div className="details-card full-width">
           <h3>📝 Descrição</h3>
-          <p>{meeting.description || 'Sem descrição.'}</p>
+          <p>{meeting.description || "Sem descrição."}</p>
         </div>
 
         <div className="details-card full-width">

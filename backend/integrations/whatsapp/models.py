@@ -1,11 +1,11 @@
 # backend/integrations/whatsapp/models.py
 
-from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey
-from sqlalchemy.orm import relationship
-from datetime import datetime
+from  sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey
+from  sqlalchemy.orm import relationship
+from  datetime import datetime
 
 # IMPORTAÇÃO CORRETA DO BASE
-from backend.database.session import Base
+from database.session import Base
 
 
 class Conversation(Base):

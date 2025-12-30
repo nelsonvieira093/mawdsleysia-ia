@@ -1,7 +1,7 @@
 # backend/models/setting.py
-from sqlalchemy import Column, Integer, String, Text, DateTime
-from sqlalchemy.sql import func
-from backend.database.session import Base
+from  sqlalchemy import Column, Integer, String, Text, DateTime
+from  sqlalchemy.sql import func
+from  database.session import Base
 
 class Setting(Base):
     __tablename__ = "settings"

@@ -7,8 +7,8 @@ Script para criar usuário admin - ESTRUTURA CORRIGIDA
 
 import sys
 import os
-from pathlib import Path
-from datetime import datetime
+from  pathlib import Path
+from  datetime import datetime
 
 # Adicionar diretório atual ao path (importante!)
 sys.path.insert(0, str(Path(__file__).parent))
@@ -17,11 +17,11 @@ print("🔍 Importando módulos...")
 
 try:
     # Importar do seu projeto REAL
-    from database.session import SessionLocal, engine
-    from database.base_class import Base
-    from models.user import User
-    from models.role import Role
-    from security.password import get_password_hash
+    from  database.session import SessionLocal, engine
+    from  database.base_class import Base
+    from  models.user import User
+    from  models.role import Role
+    from  security.password import get_password_hash
     
     print("✅ Módulos importados com sucesso!")
     
@@ -32,7 +32,7 @@ except ImportError as e:
     # Tentar importações alternativas
     try:
         # Verificar se security/password.py existe
-        from security import password
+        from  security import password
         get_password_hash = password.get_password_hash
         print("✅ security.password importado")
     except:
@@ -43,7 +43,7 @@ except ImportError as e:
             return bcrypt.hashpw(pwd.encode(), salt).decode()
     
     try:
-        from database.session import SessionLocal, engine
+        from  database.session import SessionLocal, engine
         print("✅ database.session importado")
     except ImportError as e:
         print(f"❌ Erro database.session: {e}")
@@ -51,8 +51,8 @@ except ImportError as e:
     
     # Verificar modelos
     try:
-        from models.user import User
-        from models.role import Role
+        from  models.user import User
+        from  models.role import Role
         print("✅ models.user e models.role importados")
     except ImportError as e:
         print(f"⚠️  Modelos não encontrados: {e}")
@@ -63,8 +63,8 @@ def create_tables_if_needed():
     print("\n🗄️  Verificando tabelas...")
     try:
         # Importar todos os modelos para que SQLAlchemy os reconheça
-        from models import user, role, activity_log, session, setting
-        from models import wa_conversation, wa_message
+        from  models import user, role, activity_log, session, setting
+        from  models import wa_conversation, wa_message
         
         Base.metadata.create_all(bind=engine)
         print("✅ Tabelas verificadas/criadas com sucesso!")
@@ -202,8 +202,8 @@ def setup_admin():
 
 def create_test_users(db):
     """Cria usuários de teste"""
-    from models.user import User
-    from models.role import Role
+    from  models.user import User
+    from  models.role import Role
     
     test_users = [
         {"email": "gerente@mawdsleys.com", "name": "Gerente Teste", "password": "Gerente123!", "role": "manager"},
@@ -253,7 +253,7 @@ def test_database():
         # Verificar tabelas
         result = db.execute("""
             SELECT table_name 
-            FROM information_schema.tables 
+            from  information_schema.tables 
             WHERE table_schema = 'public'
         """)
         tables = [row[0] for row in result.fetchall()]
@@ -273,7 +273,7 @@ def check_security_config():
     print("\n🔐 Verificando configurações de segurança...")
     
     try:
-        from security.jwt import SECRET_KEY, ALGORITHM
+        from  security.jwt import SECRET_KEY, ALGORITHM
         
         if SECRET_KEY == "YOUR_SUPER_SECRET_KEY_CHANGE_IN_PRODUCTION":
             print("⚠️  AVISO: SECRET_KEY está com valor padrão!")
@@ -287,7 +287,7 @@ def check_security_config():
         print("⚠️  Módulo security.jwt não encontrado")
     
     try:
-        from security.password import get_password_hash, verify_password
+        from  security.password import get_password_hash, verify_password
         print("✅ Módulo de senhas encontrado")
     except ImportError:
         print("⚠️  Módulo security.password não encontrado")

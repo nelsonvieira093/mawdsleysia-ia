@@ -1,8 +1,8 @@
 # backend/services/auth_service.py - VERSÃO COMPLETA
-from sqlalchemy.orm import Session
-from backend.models.user import User
-from backend.security.password import hash_password, verify_password
-from backend.security.jwt import create_access_token
+from  sqlalchemy.orm import Session
+from  models.user import User
+from  security.password import hash_password, verify_password
+from  security.jwt import create_access_token
 
 def register_user(db: Session, name: str, email: str, password: str):
     existing = db.query(User).filter(User.email == email).first()

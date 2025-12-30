@@ -63,7 +63,6 @@ export default function WhatsApp() {
 
         {/* Painel principal */}
         <div className="wa-panel">
-          
           {/* LISTA DE CONVERSAS */}
           <div className="wa-left">
             {loadingConversations ? (
@@ -93,7 +92,6 @@ export default function WhatsApp() {
               </div>
             )}
           </div>
-
         </div>
       </main>
     </div>

@@ -4,7 +4,11 @@ import { useNavigate } from "react-router-dom";
 import WhatsAppIcon from "./icons/WhatsAppIcon";
 import "./WhatsAppButton.css";
 
-export default function WhatsAppButton({ to = "/whatsapp", label = "WhatsApp", small = false }) {
+export default function WhatsAppButton({
+  to = "/whatsapp",
+  label = "WhatsApp",
+  small = false,
+}) {
   const nav = useNavigate();
   const handleClick = (e) => {
     e.preventDefault();
@@ -12,7 +16,10 @@ export default function WhatsAppButton({ to = "/whatsapp", label = "WhatsApp", s
   };
 
   return (
-    <button className={`wa-button ${small ? "wa-small" : ""}`} onClick={handleClick}>
+    <button
+      className={`wa-button ${small ? "wa-small" : ""}`}
+      onClick={handleClick}
+    >
       <WhatsAppIcon size={18} />
       <span className="wa-label">{label}</span>
     </button>
