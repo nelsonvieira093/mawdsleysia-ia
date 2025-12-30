@@ -10,6 +10,8 @@ from pydantic import BaseModel
 import uvicorn
 import openai
 from api.routes.kpis import router as kpis_router
+from api.routes.ingest_audio import router as ingest_audio_router
+
 
 
 
@@ -93,6 +95,7 @@ from api.routes.agenda import router as agenda_router
 app.include_router(ingest_router, prefix="/api")
 app.include_router(agenda_router)
 app.include_router(kpis_router, prefix="/api") 
+app.include_router(ingest_audio_router, prefix="/api")
 
 # =====================================================
 # CHAT
