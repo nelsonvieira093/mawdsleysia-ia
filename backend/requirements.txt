@@ -26,3 +26,5 @@ httpx==0.24.1
 
 # === UTILS ===
 requests==2.31.0
+python-multipart==0.0.9
+
