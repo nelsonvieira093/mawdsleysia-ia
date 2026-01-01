@@ -132,28 +132,7 @@ flyctl deploy --remote-only --no-cache -a backend-green-feather-7102
 
 
 
-1️⃣ Instalar Vercel CLI (se ainda não tiver)
-npm i -g vercel
 
-2️⃣ Entrar no frontend
-cd E:\MAWDSLEYS-AGENTE\frontend
-
-3️⃣ Login
-vercel login
-
-4️⃣ Deploy produção
-vercel --prod
-
-
-Durante o processo:
-
-✔ Project: selecione o projeto existente
-
-✔ Framework: Vite
-
-✔ Build command: npm run build
-
-✔ Output: dist
 
 📌 
 
@@ -203,3 +182,34 @@ uvicorn main:app --reload
 
 
 
+
+flyctl auth login
+
+flyctl deploy
+
+
+
+
+
+1️⃣ Instalar Vercel CLI (se ainda não tiver)
+npm i -g vercel
+
+2️⃣ Entrar no frontend
+cd E:\MAWDSLEYS-AGENTE\frontend
+
+3️⃣ Login
+vercel login
+
+4️⃣ Deploy produção
+vercel --prod
+
+
+Durante o processo:
+
+✔ Project: selecione o projeto existente
+
+✔ Framework: Vite
+
+✔ Build command: npm run build
+
+✔ Output: dist

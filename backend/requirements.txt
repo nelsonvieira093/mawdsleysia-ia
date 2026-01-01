@@ -5,26 +5,18 @@ python-dotenv==1.0.0
 pydantic==2.5.0
 requests==2.31.0
 
-# OpenAI (SDK estável)
+# === OpenAI (SDK estável) ===
 openai==0.28.1
-
 
 # === AUTH / SECURITY ===
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
-python-multipart==0.0.6
+python-multipart==0.0.9
 email-validator
 
 # === DATABASE ===
 sqlalchemy==2.0.23
 psycopg2-binary==2.9.9
 
-
-
-# === HTTP CLIENT (FIX CRÍTICO) ===
+# === HTTP CLIENT ===
 httpx==0.24.1
-
-# === UTILS ===
-requests==2.31.0
-python-multipart==0.0.9
-

@@ -1,74 +1,89 @@
-# backend/models/user.py - VERSÃO COM STRINGS
-from  sqlalchemy import Column, Integer, String, DateTime, Boolean, Table, ForeignKey, Text
-from  sqlalchemy.orm import relationship
-from  sqlalchemy.sql import func
-from  database.session import Base
+# backend/models/user.py
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    DateTime,
+    Boolean,
+    Table,
+    ForeignKey,
+)
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
-# Tabela de associação
+from database.session import Base  # ✅ BASE ÚNICO
+
+# =========================
+# TABELA DE ASSOCIAÇÃO
+# =========================
 user_role = Table(
-    'user_roles',
+    "user_roles",
     Base.metadata,
-    Column('user_id', Integer, ForeignKey('users.id', ondelete='CASCADE'), primary_key=True),
-    Column('role_id', Integer, ForeignKey('roles.id', ondelete='CASCADE'), primary_key=True),
-    extend_existing=True
+    Column(
+        "user_id",
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column(
+        "role_id",
+        Integer,
+        ForeignKey("roles.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
 )
 
+# =========================
+# USER MODEL
+# =========================
 class User(Base):
     __tablename__ = "users"
-    __table_args__ = {'extend_existing': True}
 
-    # Colunas principais
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), nullable=False)
     email = Column(String(255), unique=True, nullable=False, index=True)
     password = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
-    
-    # Relacionamentos com tabelas antigas - USE STRINGS
+
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+    )
+
+    # =========================
+    # RELACIONAMENTOS
+    # =========================
     followups = relationship(
-        "FollowUp",  # ⬅️ String, não classe
+        "FollowUp",
         back_populates="user",
         cascade="all, delete-orphan",
-        lazy="dynamic"
+        lazy="selectin",
     )
-    
-    kpis = relationship(
-        "KPI",  # ⬅️ String
-        back_populates="user",
-        cascade="all, delete-orphan",
-        lazy="dynamic"
-    )
-    
-    meetings = relationship(
-        "Meeting",  # ⬅️ String
-        back_populates="user",
-        cascade="all, delete-orphan",
-        lazy="dynamic"
-    )
-    
-    # Relacionamentos com tabelas novas
+
     roles = relationship(
-        "Role",  # ⬅️ String
-        secondary=user_role, 
+        "Role",
+        secondary=user_role,
         back_populates="users",
-        lazy="selectin"
+        lazy="selectin",
     )
-    
+
     sessions = relationship(
-        "Session",  # ⬅️ String
+        "Session",
         back_populates="user",
         cascade="all, delete-orphan",
-        lazy="dynamic"
     )
-    
+
     activity_logs = relationship(
-        "ActivityLog",  # ⬅️ String
+        "ActivityLog",
         back_populates="user",
         cascade="all, delete-orphan",
-        lazy="dynamic"
     )
-    
+
     def __repr__(self):
-        return f"<User(id={self.id}, email={self.email}, name={self.name})>"
+        return f"<User id={self.id} email={self.email}>"

@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 from datetime import datetime
 from contextlib import asynccontextmanager
+from fastapi import FastAPI
 
 from fastapi import FastAPI, APIRouter, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,10 +12,11 @@ import uvicorn
 import openai
 from api.routes.kpis import router as kpis_router
 from api.routes.ingest_audio import router as ingest_audio_router
+from api.routes.auth import router as auth_router
 
 
 
-
+app = FastAPI()
 
 
 # =====================================================
@@ -26,6 +28,17 @@ sys.path.insert(0, str(BASE_DIR))
 print("🚀 Iniciando backend MAWDSLEYS")
 print(f"📁 Backend dir: {BASE_DIR}")
 
+
+# suas rotas aqui
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=False
+    )
 # =====================================================
 # ENV
 # =====================================================
@@ -96,7 +109,11 @@ app.include_router(ingest_router, prefix="/api")
 app.include_router(agenda_router)
 app.include_router(kpis_router, prefix="/api") 
 app.include_router(ingest_audio_router, prefix="/api")
-
+app.include_router(
+    auth_router,
+    prefix="/auth",
+    tags=["Auth"]
+)
 # =====================================================
 # CHAT
 # =====================================================
