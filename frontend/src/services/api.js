@@ -6,10 +6,9 @@ import axios from "axios";
 // ================================
 const baseURL = import.meta.env.VITE_API_URL;
 
-// Blindagem: avisa claramente se o .env não foi carregado
 if (!baseURL) {
   console.error(
-    "❌ ERRO CRÍTICO: VITE_API_URL não definida. Verifique frontend/.env e reinicie o Vite."
+    "❌ ERRO CRÍTICO: VITE_API_URL não definida. Verifique frontend/.env"
   );
 } else {
   console.log("✅ API BaseURL:", baseURL);
@@ -32,36 +31,23 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
-
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-
     return config;
   },
   (error) => Promise.reject(error)
 );
 
 // ================================
-// RESPONSE INTERCEPTOR (LOG + AUTH)
+// RESPONSE INTERCEPTOR
 // ================================
 api.interceptors.response.use(
-  (response) => {
-    console.log(
-      `✅ ${response.config.method?.toUpperCase()} ${response.config.url}`,
-      response.status
-    );
-    return response;
-  },
+  (response) => response,
   (error) => {
     const status = error.response?.status;
-    const url = error.config?.url;
 
-    console.error(`❌ API ERROR ${status || ""} ${url || ""}`);
-
-    // Token expirado / inválido
     if (status === 401) {
-      console.warn("⚠️ Token inválido ou expirado. Redirecionando para login.");
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       window.location.href = "/login";

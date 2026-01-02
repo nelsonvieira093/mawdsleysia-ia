@@ -1,7 +1,6 @@
-// E:\MAWDSLEYS-AGENTE\frontend\src\pages\Login.jsx
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const { login } = useAuth();
@@ -9,8 +8,8 @@ export default function Login() {
 
   const [email, setEmail] = useState("nelsonronnyr40@gmail.com");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function send(e) {
     e.preventDefault();
@@ -18,15 +17,10 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const ok = await login(email, password);
-
-      if (ok) {
-        nav("/dashboard");
-      }
+      await login(email, password);
+      nav("/dashboard");
     } catch (err) {
-      setError(
-        err.message || "Credenciais inválidas ou servidor indisponível."
-      );
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -35,15 +29,15 @@ export default function Login() {
   return (
     <div className="auth-wrapper">
       <div className="auth-card">
-        <h2>Entrar no MAWDSLEYS</h2>
+        <h2>Login Administrativo</h2>
 
         {error && <div className="alert alert-error">❌ {error}</div>}
 
         <form onSubmit={send} className="auth-form">
           <input
             className="input"
-            placeholder="E-mail"
             type="email"
+            placeholder="E-mail do administrador"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -60,29 +54,9 @@ export default function Login() {
             disabled={loading}
           />
 
-          <button className="btn" type="submit" disabled={loading}>
-            {loading ? "Conectando..." : "Entrar"}
+          <button className="btn" disabled={loading}>
+            {loading ? "Entrando..." : "Entrar"}
           </button>
-
-          <div style={{ marginTop: 20, fontSize: 14, color: "#666" }}>
-            <p>
-              <strong>Dica:</strong> O backend deve estar rodando em:
-            </p>
-            <p>http://localhost:8000</p>
-            <p>
-              <a
-                href="http://localhost:8000/docs"
-                target="_blank"
-                rel="noreferrer"
-              >
-                📚 Ver documentação da API
-              </a>
-            </p>
-          </div>
-
-          <p className="auth-footer">
-            Não tem conta? <Link to="/signup">Criar</Link>
-          </p>
         </form>
       </div>
     </div>
