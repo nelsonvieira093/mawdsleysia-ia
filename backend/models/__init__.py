@@ -1,31 +1,22 @@
-# backend/models/__init__.py
+# backend/models/__init__.py - APENAS USER E ROLE
 from database.session import Base
 
-# IMPORTE EM ORDEM CORRETA: base primeiro, depois dependências
-from .ritual import Ritual  # ⬅️ PRIMEIRO: Não depende de ninguém
-from .role import Role      # ⬅️ Não depende de ninguém
-from .person import Person  # ⬅️ Se existir, coloque cedo
-from .user import User      # ⬅️ DEPENDE de Role (já importado)
-from .capture import Capture # ⬅️ DEPENDE de User (já importado)
-from .note import Note       # ⬅️ DEPENDE de Capture, User, Ritual
-from .note_tag import NoteTag # ⬅️ DEPENDE de Note
-from .followup import FollowUp # ⬅️ DEPENDE de User, Note
+# 1. Role primeiro (não depende de ninguém)
+from .role import Role
 
-# NÃO importe models que não existem
-# REMOVA estas linhas se os arquivos não existirem:
-# from .activity_log import ActivityLog
-# from .decision import Decision  
-# from .setting import Setting
-# from .tag import Tag  # ⬅️ SE Tiver model Tag, precisa criar
+# 2. User depois (agora não depende de Role para relações)
+from .user import User
+
+# ⚠️ NÃO IMPORTE MAIS NADA
+# from .followup import FollowUp
+# from .capture import Capture
+# from .note import Note
+# from .note_tag import NoteTag
+# from .ritual import Ritual
+# from .person import Person
 
 __all__ = [
     "Base",
-    "Ritual",
-    "Role",
-    "Person",
-    "User",
-    "Capture",
-    "Note",
-    "NoteTag",
-    "FollowUp",
+    "Role",  # Sem relações
+    "User",  # Sem relações
 ]
