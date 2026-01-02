@@ -1,6 +1,6 @@
 # backend/models/followup.py
 from sqlalchemy import (
-    Column, Integer, Text, Date, Enum, 
+    Column, Integer, Text, Date,
     ForeignKey, DateTime, String
 )
 from sqlalchemy.orm import relationship
@@ -8,7 +8,7 @@ from sqlalchemy.sql import func
 
 from database.session import Base
 
-class FollowUp(Base):  # NOTE: Mantenha FollowUp (com U maiúsculo)
+class FollowUp(Base):
     __tablename__ = "followups"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -29,45 +29,19 @@ class FollowUp(Base):  # NOTE: Mantenha FollowUp (com U maiúsculo)
         index=True,
     )
     
-    # Referência ao Ritual (se existir)
-    ritual_id = Column(
-        Integer,
-        ForeignKey("rituals.id", ondelete="SET NULL"),
-        nullable=True,
-    )
-    
-    # Referência à Person (responsável)
-    owner_id = Column(
-        Integer,
-        ForeignKey("people.id", ondelete="SET NULL"),
-        nullable=True,
-    )
-    
     title = Column(String(200), nullable=True)
     description = Column(Text, nullable=False)
     
-    due_date = Column(Date)
+    due_date = Column(Date, nullable=True)
     
     status = Column(
-        Enum(
-            "ABERTO",
-            "EM_ANDAMENTO",
-            "CONCLUIDO",
-            "CANCELADO",
-            name="followup_status",
-        ),
+        String(20),  # ⬅️ Mude de Enum para String para simplificar
         default="ABERTO",
         nullable=False,
     )
     
     priority = Column(
-        Enum(
-            "BAIXA",
-            "MEDIA", 
-            "ALTA",
-            "URGENTE",
-            name="followup_priority",
-        ),
+        String(20),  # ⬅️ Mude de Enum para String para simplificar
         default="MEDIA",
         nullable=False,
     )
@@ -85,16 +59,33 @@ class FollowUp(Base):  # NOTE: Mantenha FollowUp (com U maiúsculo)
     )
 
     # =========================
-    # RELACIONAMENTOS
+    # RELACIONAMENTOS SIMPLIFICADOS
     # =========================
     user = relationship(
         "User",
         back_populates="followups",
     )
     
-    # note = relationship("Note", back_populates="followups")  # Se existir
-    # ritual = relationship("Ritual", back_populates="followups")  # Se existir
-    # owner = relationship("Person", back_populates="assigned_followups")  # Se existir
+    # ⚠️ RELAÇÃO com Note COMENTADA (Note não tem back_populates correto)
+    # note = relationship("Note")  # SEM back_populates
+    
+    # ❌ REMOVIDO: ritual_id e owner_id (modelos podem não existir)
+    # ❌ REMOVIDO: relacionamentos com Ritual e Person
 
     def __repr__(self):
         return f"<FollowUp(id={self.id}, status='{self.status}')>"
+    
+    def to_dict(self):
+        """Converte para dicionário"""
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "note_id": self.note_id,
+            "title": self.title,
+            "description": self.description,
+            "due_date": self.due_date.isoformat() if self.due_date else None,
+            "status": self.status,
+            "priority": self.priority,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+        }

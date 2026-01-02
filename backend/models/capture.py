@@ -1,5 +1,4 @@
 # backend/models/capture.py
-
 from sqlalchemy import (
     Column,
     Text,
@@ -15,7 +14,6 @@ from sqlalchemy.sql import func
 from datetime import datetime
 
 from database.session import Base
-
 
 class Capture(Base):
     __tablename__ = "captures"
@@ -38,8 +36,6 @@ class Capture(Base):
         nullable=False,
         index=True
     )
-
-    # ❌ REMOVIDO: ritual_id (dependia de Ritual inexistente)
 
     # Status de processamento
     processed = Column(Boolean, default=False, nullable=False)
@@ -64,7 +60,7 @@ class Capture(Base):
     )
 
     # =========================
-    # RELACIONAMENTOS VÁLIDOS
+    # RELACIONAMENTOS SIMPLIFICADOS
     # =========================
 
     user = relationship(
@@ -72,8 +68,12 @@ class Capture(Base):
         back_populates="captures"
     )
 
-    # ❌ REMOVIDO:
-    # ritual = relationship("Ritual")
+    # ⚠️ RELAÇÃO com Note COMENTADA até Note ser corrigido
+    # note = relationship(
+    #     "Note", 
+    #     back_populates="capture",
+    #     uselist=False
+    # )
 
     # =========================
     # MÉTODOS

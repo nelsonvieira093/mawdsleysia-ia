@@ -1,5 +1,4 @@
 # backend/models/user.py
-
 from sqlalchemy import (
     Column,
     Integer,
@@ -59,22 +58,19 @@ class User(Base):
         lazy="selectin",
     )
 
-    # FollowUps (um-para-muitos)
+    # FollowUps
     followups = relationship(
         "FollowUp",
         back_populates="user",
         cascade="all, delete-orphan",
     )
 
-    # Captures (um-para-muitos)
+    # Captures
     captures = relationship(
         "Capture",
         back_populates="user",
         cascade="all, delete-orphan",
     )
-
-    # ❌ ActivityLog REMOVIDO
-    # Será reintroduzido somente quando o model existir
 
     def __repr__(self) -> str:
         return f"<User id={self.id} email={self.email}>"
