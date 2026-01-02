@@ -1,4 +1,4 @@
-# backend/models/followup.py
+# models/followup.py - VERSÃO FINAL CORRIGIDA
 from sqlalchemy import (
     Column, Integer, Text, Date,
     ForeignKey, DateTime, String
@@ -21,7 +21,7 @@ class FollowUp(Base):
         index=True,
     )
     
-    # Referência à Note (se existir)
+    # Referência à Note
     note_id = Column(
         Integer,
         ForeignKey("notes.id", ondelete="CASCADE"),
@@ -35,13 +35,13 @@ class FollowUp(Base):
     due_date = Column(Date, nullable=True)
     
     status = Column(
-        String(20),  # ⬅️ Mude de Enum para String para simplificar
+        String(20),
         default="ABERTO",
         nullable=False,
     )
     
     priority = Column(
-        String(20),  # ⬅️ Mude de Enum para String para simplificar
+        String(20),
         default="MEDIA",
         nullable=False,
     )
@@ -59,24 +59,20 @@ class FollowUp(Base):
     )
 
     # =========================
-    # RELACIONAMENTOS SIMPLIFICADOS
+    # RELACIONAMENTOS CORRIGIDOS
     # =========================
     user = relationship(
         "User",
-        back_populates="followups",
+        back_populates="followups",  # ⬅️ MANTÉM (User tem essa relação)
     )
     
-    # ⚠️ RELAÇÃO com Note COMENTADA (Note não tem back_populates correto)
-    # note = relationship("Note")  # SEM back_populates
-    
-    # ❌ REMOVIDO: ritual_id e owner_id (modelos podem não existir)
-    # ❌ REMOVIDO: relacionamentos com Ritual e Person
+    # ⚠️ MUDANÇA CRÍTICA: REMOVA back_populates da relação com Note
+    note = relationship("Note")  # ⬅️ SEM back_populates!
 
     def __repr__(self):
         return f"<FollowUp(id={self.id}, status='{self.status}')>"
     
     def to_dict(self):
-        """Converte para dicionário"""
         return {
             "id": self.id,
             "user_id": self.user_id,
