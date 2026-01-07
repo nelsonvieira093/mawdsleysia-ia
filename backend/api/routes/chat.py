@@ -18,7 +18,7 @@ from db.repositories.activity_log_repository import ActivityLogRepository
 from core.memory.memory_engine import MemoryEngine
 
 # 🔹 OpenAI
-from openai import OpenAI
+import openai
 
 # =========================
 # CONFIG
@@ -28,7 +28,8 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     raise RuntimeError("OPENAI_API_KEY não configurada no ambiente")
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+openai.api_key = OPENAI_API_KEY
+
 
 router = APIRouter(prefix="/api/v1/chat", tags=["Chat MAWDSLEYS"])
 
@@ -219,7 +220,7 @@ Usuário: {user_name} (ID: {user_id})
         # =========================
         # 4️⃣ OPENAI COM CONTEXTO ENRIQUECIDO
         # =========================
-        completion = client.chat.completions.create(
+        completion = openai.ChatCompletion.create(
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": system_prompt},
@@ -228,7 +229,7 @@ Usuário: {user_name} (ID: {user_id})
             temperature=0.3
         )
 
-        reply_text = completion.choices[0].message.content
+        reply_text = completion["choices"][0]["message"]["content"]
 
         # =========================
         # 5️⃣ REGISTRA INTERAÇÃO NA MEMÓRIA DO AGENTE
@@ -305,7 +306,7 @@ async def chat_simple(
 ):
     """Chat simplificado sem consulta de memória (fallback)"""
     try:
-        completion = client.chat.completions.create(
+        completion = openai.ChatCompletion.create(
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": "Você é o assistente corporativo MAWDSLEYS. Responda de forma profissional e útil."},
@@ -314,7 +315,7 @@ async def chat_simple(
             temperature=0.3
         )
         
-        reply_text = completion.choices[0].message.content
+        reply_text = completion["choices"][0]["message"]["content"]
         
         return ChatResponse(
             reply=reply_text,
@@ -342,7 +343,7 @@ async def chat_public(
         user_name = "Test User"
         
         # Versão simplificada para teste:
-        completion = client.chat.completions.create(
+        completion = openai.ChatCompletion.create(
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": "Você é o assistente corporativo MAWDSLEYS. Responda de forma profissional."},
@@ -351,7 +352,7 @@ async def chat_public(
             temperature=0.3
         )
         
-        reply_text = completion.choices[0].message.content
+        reply_text = completion["choices"][0]["message"]["content"]
         
         # Registra evento do chat público (opcional)
         try:
