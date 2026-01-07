@@ -82,9 +82,9 @@ export default function Dashboard() {
     setLoading(true);
     try {
       const [kpiRes, fuRes, meetRes] = await Promise.allSettled([
-        api.get("/kpis"),
-        api.get("/followups"),
-        api.get("/meetings"),
+        api.get("api/kpis"),
+        api.get("api/agenda/followups"),
+        api.get("api/meetings"),
       ]);
 
       // KPIs

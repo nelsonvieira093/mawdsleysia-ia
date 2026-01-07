@@ -10,9 +10,12 @@ export default function ChatInput({
   isTyping,
   aiStatus,
 }) {
-  // Recebe texto vindo do áudio
+  // 🔒 GARANTIA ABSOLUTA CONTRA undefined
+  const safeValue = typeof value === "string" ? value : "";
+
+  // Recebe texto vindo do áudio (BLINDADO)
   const handleAudioResult = (text) => {
-    onChange(text);
+    onChange(typeof text === "string" ? text : "");
   };
 
   return (
@@ -21,7 +24,7 @@ export default function ChatInput({
         <textarea
           className="chat-input"
           placeholder="Digite ou fale com o Agente MAWDSLEYS..."
-          value={value}
+          value={safeValue}
           onChange={(e) => onChange(e.target.value)}
           onKeyPress={onKeyPress}
           rows="3"
@@ -41,16 +44,13 @@ export default function ChatInput({
 
           <div className="send-controls">
             {/* 🎤 ÁUDIO */}
-            <AudioInput
-              onResult={handleAudioResult}
-              disabled={isTyping}
-            />
+            <AudioInput onResult={handleAudioResult} disabled={isTyping} />
 
             {/* ✈️ ENVIAR */}
             <button
               className="send-button"
               onClick={onSend}
-              disabled={!value.trim() || isTyping}
+              disabled={!safeValue.trim() || isTyping}
             >
               {isTyping ? "⏳ Processando..." : "✈️ Enviar"}
             </button>

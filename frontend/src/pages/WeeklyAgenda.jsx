@@ -1,3 +1,4 @@
+//E: \MAWDSLEYS - AGENTE\frontend\src\pages\WeeklyAgenda.jsx
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import "./WeeklyAgenda.css";
@@ -479,7 +480,7 @@ export default function WeeklyAgenda() {
 
   const loadMeetings = async () => {
     try {
-      const res = await api.get("/agenda");
+      const res = await api.get("api/agenda");
       setMeetings(res.data?.items || []);
     } catch {
       // Dados de exemplo

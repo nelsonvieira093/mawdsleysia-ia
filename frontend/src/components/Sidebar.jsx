@@ -1,3 +1,4 @@
+// E:\MAWDSLEYS-AGENTE\frontend\src\components\Sidebar.jsx
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import "./Sidebar.css";
@@ -12,6 +13,7 @@ export default function Sidebar() {
       group: "Executivo",
       items: [
         { icon: "📊", label: "Dashboard", to: "/" },
+        { icon: "📈", label: "KPIs Estratégicos", to: "/kpis" }, // ✅ NOVO
         { icon: "🤖", label: "Chat da IA", to: "/chat" },
         { icon: "🧠", label: "Agente Executivo", to: "/agent" },
       ],
@@ -20,8 +22,9 @@ export default function Sidebar() {
       group: "Rituais & Operações",
       items: [
         { icon: "📅", label: "Pautas da Semana", to: "/agenda" },
+        { icon: "📌", label: "Follow-ups", to: "/followups" }, // ✅ NOVO
         { icon: "📁", label: "Entregáveis", to: "/deliverables" },
-        { icon: "📜", label: "Histórico / Follow-ups", to: "/history" },
+        { icon: "📜", label: "Histórico", to: "/history" },
       ],
     },
     {
@@ -31,7 +34,7 @@ export default function Sidebar() {
     {
       group: "Integrações",
       items: [
-        /*{ icon: "💬", label: "WhatsApp", to: "/whatsapp" },*/
+        /* { icon: "💬", label: "WhatsApp", to: "/whatsapp" }, */
       ],
     },
   ];
@@ -66,6 +69,7 @@ export default function Sidebar() {
             })}
           </div>
         ))}
+
         <div className="sidebar-integrations">
           <WhatsAppButton label="WhatsApp" small={false} />
         </div>

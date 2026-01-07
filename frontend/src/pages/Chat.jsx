@@ -1,3 +1,5 @@
+// E:\MAWDSLEYS-AGENTE\frontend\src\pages\Chat.jsx
+
 import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import ChatInput from "../components/ChatInput";
@@ -21,11 +23,20 @@ export default function Chat() {
   const messagesEndRef = useRef(null);
 
   // =============================
-  // STATUS IA
+  // STATUS DA IA
   // =============================
   useEffect(() => {
     checkAIStatus();
   }, []);
+
+  const checkAIStatus = async () => {
+    try {
+      const response = await api.get("/api/v1/chat/health");
+      setAiStatus(response.status === 200 ? "online" : "offline");
+    } catch {
+      setAiStatus("offline");
+    }
+  };
 
   // =============================
   // AUTO SCROLL
@@ -33,15 +44,6 @@ export default function Chat() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
-  const checkAIStatus = async () => {
-    try {
-      const response = await api.get("/chat/health");
-      setAiStatus(response.data.status);
-    } catch {
-      setAiStatus("offline");
-    }
-  };
 
   const formatTime = (dateString) => {
     const date = new Date(dateString);
@@ -60,7 +62,7 @@ export default function Chat() {
   ];
 
   // =============================
-  // ENVIO DE MENSAGEM
+  // ENVIO DE MENSAGEM (CHAT REAL)
   // =============================
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isTyping) return;
@@ -73,12 +75,14 @@ export default function Chat() {
     };
 
     setMessages((prev) => [...prev, userMessage]);
+
     const messageToSend = inputMessage;
     setInputMessage("");
     setIsTyping(true);
 
     try {
-      const response = await api.post("/chat/", {
+      // ✅ CORREÇÃO DEFINITIVA: barra final
+      const response = await api.post("/api/v1/chat/", {
         message: messageToSend,
       });
 
@@ -90,7 +94,7 @@ export default function Chat() {
       };
 
       setMessages((prev) => [...prev, aiMessage]);
-    } catch {
+    } catch (err) {
       setMessages((prev) => [
         ...prev,
         {
@@ -137,7 +141,6 @@ export default function Chat() {
       <Sidebar />
 
       <div className="chat-main-area">
-        {/* HEADER */}
         <div className="chat-header">
           <div className="header-left">
             <h1>Chat MAWDSLEYS</h1>
@@ -152,9 +155,7 @@ export default function Chat() {
           </button>
         </div>
 
-        {/* CONTEÚDO */}
         <div className="chat-content">
-          {/* SUGESTÕES */}
           <div className="suggestions-section">
             {suggestedTopics.map((topic, index) => (
               <button
@@ -167,7 +168,6 @@ export default function Chat() {
             ))}
           </div>
 
-          {/* MENSAGENS */}
           <div className="messages-container">
             {messages.map((message) => (
               <div
@@ -202,7 +202,6 @@ export default function Chat() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* INPUT (COMPONENTE) */}
           <ChatInput
             value={inputMessage}
             onChange={setInputMessage}

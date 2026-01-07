@@ -15,6 +15,10 @@ import KnowledgeBase from "./pages/KnowledgeBase";
 import MeetingDetails from "./pages/MeetingDetails";
 import WhatsApp from "./pages/WhatsApp";
 
+// 🔥 NOVAS PÁGINAS
+import Followups from "./pages/Followups";
+import Kpis from "./pages/Kpis";
+
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
@@ -57,6 +61,11 @@ export default function RouterApp() {
                   <Route path="/history" element={<History />} />
                   <Route path="/kb" element={<KnowledgeBase />} />
                   <Route path="/whatsapp" element={<WhatsApp />} />
+
+                  {/* 🔥 ROTAS NOVAS */}
+                  <Route path="/followups" element={<Followups />} />
+                  <Route path="/kpis" element={<Kpis />} />
+
                   <Route
                     path="*"
                     element={<Navigate to="/dashboard" replace />}
