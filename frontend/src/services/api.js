@@ -5,8 +5,9 @@ import axios from "axios";
 // CONFIGURAÇÃO BASE
 // =====================================================
 
-// Base do backend (SEM /api fixo)
-export const baseURL = "http://localhost:8000";
+// ✅ Base do backend via variável de ambiente (Vercel / Vite)
+// fallback para localhost apenas em desenvolvimento local
+export const baseURL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 // Instância única do Axios
 const api = axios.create({
