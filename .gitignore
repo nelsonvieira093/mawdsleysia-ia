@@ -175,3 +175,18 @@ ngrok.zip
 # Tests / scripts locais
 tests/
 scripts/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Frontend
+node_modules/
+dist/
+.vite/

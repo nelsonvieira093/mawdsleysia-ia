@@ -1,3 +1,4 @@
+# E:\MAWDSLEYS-AGENTE\backend\fly.toml
 # fly.toml app configuration file
 # https://fly.io/docs/reference/configuration/
 
@@ -7,10 +8,9 @@ primary_region = "gru"
 [build]
 
 [http_service]
-  internal_port = 8000
+  internal_port = 8080
   force_https = true
 
-  # 🔴 AJUSTES CRÍTICOS (CORREÇÃO DO 502)
   auto_stop_machines = false
   auto_start_machines = true
   min_machines_running = 1

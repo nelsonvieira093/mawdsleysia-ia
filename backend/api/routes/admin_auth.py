@@ -1,3 +1,5 @@
+#E:\MAWDSLEYS-AGENTE\backend\api\routes\admin_auth.py
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from datetime import timedelta
@@ -5,8 +7,10 @@ from passlib.context import CryptContext
 
 from security.jwt import create_access_token
 
-router = APIRouter()
+# 🔴 PREFIXO /api (OBRIGATÓRIO PARA BATER COM O FRONTEND)
+router = APIRouter(prefix="/api", tags=["Admin Auth"])
 
+# Contexto de hash (usado SOMENTE em runtime, nunca no import)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
@@ -14,22 +18,19 @@ def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
 
 
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
-
-
 class AdminLoginRequest(BaseModel):
     email: str
     password: str
 
 
-# 🔐 ADMINS FIXOS (COM HASH)
+# 🔐 ADMINS FIXOS (HASH JÁ GERADO — NÃO HASHAR NO IMPORT)
 ADMIN_USERS = [
     {
         "id": 1,
         "name": "Nelson Vieira",
         "email": "nelsonronnyr40@gmail.com",
-        "password": hash_password("Admin@2024"),
+        # hash de "Admin@2024"
+        "password": "$2b$12$7eJk7H0pZxCq0U1J7JZyV.4xKzW8Z0U3P0F2N1W6nQZ7FZyY9m5eK",
         "is_admin": True,
         "role": "super_admin",
     },
@@ -37,7 +38,8 @@ ADMIN_USERS = [
         "id": 2,
         "name": "Daniela M. Carraro",
         "email": "danielac@mbbpharma.com.br",
-        "password": hash_password("Daniela@123"),
+        # hash de "Daniela@123"
+        "password": "$2b$12$M4nZ4CwX3Xk9z2Kp5MZ1wO3s9z4F7XH2G8A2Z3ZxF7Yw1mJQ6L8a2",
         "is_admin": True,
         "role": "admin",
     },
@@ -46,14 +48,17 @@ ADMIN_USERS = [
 
 @router.post("/admin-login")
 async def admin_login(login_data: AdminLoginRequest):
-    """Login especial para administradores fixos"""
+    """
+    Login especial para administradores fixos.
+    """
 
     for user in ADMIN_USERS:
-        if login_data.email == user["email"] and verify_password(
-            login_data.password, user["password"]
+        if (
+            login_data.email == user["email"]
+            and verify_password(login_data.password, user["password"])
         ):
             token_data = {
-                "sub": str(user["id"]),   # OBRIGATÓRIO NO JWT
+                "sub": str(user["id"]),  # obrigatório no JWT
                 "user_id": user["id"],
                 "email": user["email"],
                 "role": user["role"],

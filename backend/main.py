@@ -82,12 +82,17 @@ async def health_lite():
 # 1️⃣ CORS MIDDLEWARE - DEVE VIR PRIMEIRO PARA SWAGGER FUNCIONAR
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Em produção, substitua por origens específicas
-    allow_credentials=True,  # ✅ CRÍTICO: Deve ser True para Swagger
+    allow_origins=[
+        "https://mawdsleys-agente.vercel.app",
+        "https://mawdsleys-agente-git-main-nelsonvieira093s-projects.vercel.app",
+        "http://localhost:5173",
+        "http://localhost:3000",
+    ],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["*"]
 )
+
 
 # 2️⃣ MIDDLEWARE DE ACTIVITY LOG
 try:
