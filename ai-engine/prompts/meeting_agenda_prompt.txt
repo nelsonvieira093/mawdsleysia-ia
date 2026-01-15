@@ -1,0 +1,11 @@
+Gere pautas semanais para reuniões da diretoria.
+
+Formato:
+1. Abertura
+2. Revisão de entregáveis
+3. Follow-ups pendentes
+4. Alinhamentos estratégicos
+5. Riscos identificados
+6. Próximos passos
+
+Use o contexto fornecido pelo usuário.

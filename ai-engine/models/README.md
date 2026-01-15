@@ -1,0 +1,1 @@
+Modelos gerenciados externamente.

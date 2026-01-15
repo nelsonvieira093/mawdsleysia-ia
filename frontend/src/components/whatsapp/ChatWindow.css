@@ -1,0 +1,9 @@
+.wa-chat-window { flex:1; background:var(--bg-card); border-radius:10px; display:flex; flex-direction:column; overflow:hidden; }
+.wa-messages { padding:16px; overflow:auto; flex:1; }
+.wa-msg { max-width:70%; margin-bottom:10px; padding:10px 12px; border-radius:10px; }
+.wa-msg.in { background:#fff; align-self:flex-start; color:#111; }
+.wa-msg.out { background:var(--accent); align-self:flex-end; color:#fff; }
+.wa-msg-time { font-size:11px; opacity:0.6; margin-top:4px; text-align:right; }
+.wa-input { display:flex; gap:8px; padding:12px; border-top:1px solid rgba(255,255,255,0.04); }
+.wa-input input { flex:1; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:inherit; }
+.wa-input button { padding:10px 14px; border-radius:8px; background:var(--accent); border:none; color:#fff; cursor:pointer; }

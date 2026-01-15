@@ -1,0 +1,92 @@
+/* === RESET GLOBAL === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+/* === COR DE FUNDO GLOBAL === */
+html, body, #root {
+  height: 100%;
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+
+/* === VARIÁVEIS DO TEMA === */
+:root {
+  --bg-primary: #0f0f11;
+  --bg-card: #1a1a1d;
+  --text-primary: #ffffff;
+  --text-secondary: #b5b5b5;
+  --radius: 14px;
+  --shadow: 0px 4px 18px rgba(0, 0, 0, 0.4);
+  --accent: #4c8bff;
+}
+
+/* === LAYOUT CENTRALIZADO === */
+.auth-wrapper {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--bg-primary);
+  padding: 20px;
+}
+
+.auth-card {
+  background: var(--bg-card);
+  padding: 40px;
+  width: 400px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  color: var(--text-primary);
+}
+
+/* === FORM === */
+.auth-form {
+  display: grid;
+  gap: 16px;
+}
+
+.input {
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid #333;
+  background: #111;
+  color: white;
+  font-size: 15px;
+}
+
+.btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+a {
+  color: var(--accent);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}

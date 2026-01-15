@@ -1,0 +1,88 @@
+.sidebar {
+  width: 250px;
+  background: var(--bg-sidebar);
+  color: white;
+  height: 100vh;
+  padding: 30px 20px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  margin-bottom: 35px;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: 800;
+  color: white;
+}
+
+.sub-logo {
+  font-size: 13px;
+  opacity: 0.7;
+  margin-top: -5px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  flex-grow: 1;
+}
+
+.sidebar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.section-title {
+  font-size: 13px;
+  opacity: 0.5;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-light);
+  padding: 10px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.nav-item.active {
+  background: var(--accent);
+  color: white !important;
+}
+
+.nav-item .icon {
+  font-size: 18px;
+}
+
+.logout-btn {
+  margin-top: auto;
+  padding: 10px;
+  border-radius: 8px;
+  background: #d93636;
+  border: none;
+  color: white;
+  cursor: pointer;
+  width: 100%;
+  transition: 0.2s;
+}
+
+.logout-btn:hover {
+  background: #b82f2f;
+}

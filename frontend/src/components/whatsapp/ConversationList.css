@@ -1,0 +1,5 @@
+.wa-conversation-list { width:320px; background:var(--bg-card); padding:12px; border-radius:10px; overflow:auto; }
+.wa-conversation-item { padding:12px; border-radius:8px; cursor:pointer; margin-bottom:8px; }
+.wa-conversation-item.active { background:var(--accent); color:#fff; }
+.wa-name { font-weight:700; }
+.wa-last { font-size:13px; opacity:0.8; margin-top:6px; }

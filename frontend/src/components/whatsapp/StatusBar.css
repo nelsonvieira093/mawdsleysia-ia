@@ -1,0 +1,89 @@
+/* ===========================
+   STATUS BAR — MAWDSLEYS UI
+   =========================== */
+
+.status-bar {
+  width: 100%;
+  padding: 10px 18px;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+/* Texto e ícone */
+.status-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-light);
+  font-size: 14px;
+}
+
+.status-left .status-title {
+  font-weight: 600;
+  color: white;
+  letter-spacing: 0.4px;
+}
+
+/* Bolinha indicando status (online/offline) */
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Online */
+.status-online {
+  background-color: #4ade80; /* verde */
+  box-shadow: 0 0 8px #4ade80;
+}
+
+/* Offline */
+.status-offline {
+  background-color: #ef4444; /* vermelho */
+  box-shadow: 0 0 8px #ef4444;
+}
+
+/* ===========================
+   AÇÕES DO LADO DIREITO
+   =========================== */
+
+.status-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Botões */
+
+.status-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-light);
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.status-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+/* Atualizado há X minutos */
+
+.status-last-update {
+  font-size: 12px;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
