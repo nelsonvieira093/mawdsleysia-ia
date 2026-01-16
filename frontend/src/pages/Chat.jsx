@@ -3,12 +3,12 @@ import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import ChatInput from "../components/ChatInput";
 import api from "../services/api";
-import { useAuth } from "../contexts/AuthContext"; // ✅ CORREÇÃO
-import { getAIContext } from "../services/api"; // ✅ CORREÇÃO
+import { useAuth } from "../contexts/AuthContext";
+import { getAIContext } from "../services/api";
 import "./Chat.css";
 
 export default function Chat() {
-  const { user } = useAuth(); // ✅ CORREÇÃO
+  const { user } = useAuth();
 
   const [messages, setMessages] = useState([
     {
@@ -23,7 +23,7 @@ export default function Chat() {
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [aiStatus, setAiStatus] = useState("checking");
-  const [aiContext, setAiContext] = useState(null); // ✅ CORREÇÃO
+  const [aiContext, setAiContext] = useState(null);
   const messagesEndRef = useRef(null);
 
   // =============================
@@ -35,7 +35,7 @@ export default function Chat() {
 
   useEffect(() => {
     if (user?.id) {
-      loadAIContext(user.id); // ✅ CORREÇÃO
+      loadAIContext(user.id);
     }
   }, [user?.id]);
 
@@ -76,7 +76,7 @@ export default function Chat() {
   };
 
   // =============================
-  // ENVIO DE MENSAGEM (CORRIGIDO)
+  // ENVIO DE MENSAGEM (CORREÇÃO CIRÚRGICA)
   // =============================
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isTyping || !user?.id) return;
@@ -95,24 +95,39 @@ export default function Chat() {
     setIsTyping(true);
 
     try {
-      // ✅ CORREÇÃO CRÍTICA: payload completo
-      const response = await api.post("/api/v1/chat", {
-        user_id: user.id,
-        message: messageToSend,
-        context: aiContext, // 👈 AGORA A IA ENXERGA TUDO
+      // 🔥 CORREÇÃO 1: Endpoint correto com barra final
+      // 🔥 CORREÇÃO 2: Payload simplificado (o backend atual não usa context)
+      const response = await api.post("/api/v1/chat/", {
+        message: messageToSend, // Apenas message, não user_id nem context
       });
+
+      console.log("📦 Resposta completa:", response.data); // DEBUG
+
+      // 🔥 CORREÇÃO 3: Tratamento correto da resposta
+      // Backend retorna: {reply: "texto", status: "success", timestamp: "..."}
+      const replyText =
+        response.data.reply ||
+        response.data.response ||
+        response.data.message ||
+        "Resposta recebida";
+
+      console.log("📝 Texto extraído:", replyText);
 
       const aiMessage = {
         id: Date.now() + 1,
         role: "assistant",
-        content:
-          response.data.reply || response.data.response || "Resposta recebida",
+        content: replyText,
         timestamp: new Date().toISOString(),
       };
 
       setMessages((prev) => [...prev, aiMessage]);
     } catch (err) {
       console.error("❌ Erro no chat:", err);
+      console.error("❌ Detalhes do erro:", {
+        status: err.response?.status,
+        data: err.response?.data,
+        message: err.message,
+      });
 
       const errorMessage = {
         id: Date.now() + 1,
@@ -120,7 +135,9 @@ export default function Chat() {
         content:
           aiStatus === "offline"
             ? "🔌 **IA Offline**\n\nO backend está indisponível no momento."
-            : "⚠️ **Erro ao processar sua solicitação**.\n\nTente novamente.",
+            : `⚠️ **Erro técnico**\n\nStatus: ${
+                err.response?.status || "N/A"
+              }\nDetalhes: ${err.response?.data?.detail || err.message}`,
         timestamp: new Date().toISOString(),
       };
 
