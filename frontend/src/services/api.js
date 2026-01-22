@@ -223,6 +223,29 @@ export const createFollowupViaAI = async (data) => {
   };
 };
 
+// Bullet Journal Executivo
+export async function captureExecutive(input) {
+  const response = await api.post("/ceo/capture", {
+    input
+  });
+  return response.data;
+}
+
+// Documentos automáticos
+export async function getDailyLog() {
+  return (await api.get("/executive-docs/daily")).data;
+}
+
+export async function getWeeklyDigest() {
+  return (await api.get("/executive-docs/weekly")).data;
+}
+
+export async function getBoardReport() {
+  return (await api.get("/executive-docs/board")).data;
+}
+
+
+
 // =====================================================
 // EXPORT DEFAULT
 // =====================================================

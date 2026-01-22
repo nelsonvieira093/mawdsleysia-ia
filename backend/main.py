@@ -11,6 +11,7 @@ from pathlib import Path
 from datetime import datetime
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
+from api.routes import chat_web
 
 
 # =====================================================
@@ -117,6 +118,14 @@ from api.routes.meetings import router as meetings_router
 from api.routes.automations import router as automations_router
 from api.routes.dashboard import router as dashboard_router
 from api.routes.debug import router as debug_router
+from api.routes import (
+    executive_documents,
+    executive_dashboard,
+    followup_alerts
+)
+
+
+
 
 # Importe o router de admin auth (se existir)
 try:
@@ -788,6 +797,13 @@ app.include_router(agenda_router, prefix="/api", tags=["Agenda"])
 app.include_router(kpis_router, prefix="/api", tags=["KPIs"])
 app.include_router(ingest_audio_router, prefix="/api", tags=["Audio"])
 
+# Rotas de chat web simples (LEGADO)
+app.include_router(chat_web.router)
+
+# Rotas executivas e de alertas
+app.include_router(executive_documents.router)
+app.include_router(executive_dashboard.router)
+app.include_router(followup_alerts.router)
 
 async def health_lite_endpoint():
     return await health_lite()

@@ -1,51 +1,71 @@
-import os
-import sys
-from pathlib import Path
+#E:\MAWDSLEYS-AGENTE\backend\agents\ceo_agent.py
 from openai import OpenAI
 
-# Add parent directory to path to resolve imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-try:
-    from ai_engine.embeddings.embedding_loader import search_relevant
-except ImportError:
-    # Fallback if import fails
-    from backend.ai_engine.embeddings.embedding_loader import search_relevant
-
-
-class CEOAgent: pass
+from services.ai_service import load_system_prompt
+from core.memory.executive_memory_service import ExecutiveMemoryService
+from services.json_guard import JSONGuard
 
 client = OpenAI()
 
-def run_ceo_agent(question: str):
-    # Buscando contexto
-    docs = search_relevant(question)
 
-    context = "\n\n".join(
-        [f"[Documento: {d['title']}]\n{d['content']}" for d in docs]
-    )
+class CEOAgent:
+    """
+    Agente Executivo da CEO (PRODUÇÃO).
+    - NÃO é chat
+    - NÃO usa embeddings
+    - NÃO depende de pergunta
+    - SEMPRE retorna estrutura válida
+    - Fonte da verdade: captures + memória persistente
+    """
 
-    system_prompt = f"""
-Você é o MAWDSLEYS — Agente Executivo de Diretoria.
+    def __init__(self, user_id: str):
+        self.user_id = user_id
+        self.memory = ExecutiveMemoryService(user_id)
 
-Funções principais:
-- Responder com precisão executiva
-- Fornecer visão estratégica
-- Usar o contexto da base de conhecimento quando disponível
-- Ser objetivo, direto e confiável
+    def process_capture(self, raw_input: str) -> dict:
+        # 1️⃣ Carrega prompt executivo fixo
+        system_prompt = load_system_prompt()
 
-Se houver contexto disponível, utilize para fundamentar a resposta.
+        # 2️⃣ Monta memória executiva persistente
+        memory_context = self.memory.build_context(days=30, limit=20)
 
-Contexto relevante:
-{context}
-"""
-
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": question}
+        # 3️⃣ Mensagens para a IA
+        messages = [
+            {
+                "role": "system",
+                "content": system_prompt
+            },
+            {
+                "role": "system",
+                "content": (
+                    "HISTÓRICO EXECUTIVO PERSISTENTE (CAPTURES):\n"
+                    f"{memory_context}"
+                )
+            },
+            {
+                "role": "user",
+                "content": raw_input
+            }
         ]
-    )
 
-    return response.choices[0].message["content"]
+        # 4️⃣ Chamada ao modelo
+        response = client.chat.completions.create(
+            model="gpt-4.1",
+            messages=messages,
+            temperature=0.1
+        )
+
+        # 5️⃣ Blindagem de JSON (NUNCA quebra produção)
+        raw_content = response.choices[0].message.content
+        structured = JSONGuard.extract_json(raw_content)
+
+        # 6️⃣ Garantias mínimas de contrato (defensivo)
+        structured.setdefault("hashtags", ["#DailyLog"])
+        structured.setdefault("followups", [])
+        structured.setdefault("rituals", [])
+        structured.setdefault("directors", [])
+        structured.setdefault("actions", [])
+        structured.setdefault("register_location", "DailyLog")
+        structured.setdefault("confidence_level", "low")
+
+        return structured

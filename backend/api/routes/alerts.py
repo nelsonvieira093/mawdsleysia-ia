@@ -1,8 +1,9 @@
+# E:\MAWDSLEYS-AGENTE\backend\api\routes\alerts.py
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from db.session import get_db
-from ...middleware.auth import require_any_auth
+from backend.database.session import get_db
+from backend.api.middleware import require_any_auth
 from db.models.activity_log import ActivityLog
 
 router = APIRouter(prefix="/api/v1/alerts", tags=["Alerts"])

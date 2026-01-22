@@ -1,0 +1,156 @@
+/* ===============================
+   Executive Block – Bullet Journal
+   Estilo Executivo / Dark
+   =============================== */
+
+.executive-block {
+  background: rgba(15, 23, 42, 0.85); /* slate-900 */
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-left: 4px solid #6366f1; /* indigo */
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin-top: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* Estado de erro */
+.executive-block.error {
+  border-left-color: #ef4444;
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.3);
+}
+
+/* ===============================
+   Hashtags
+   =============================== */
+
+.executive-hashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.exec-tag {
+  background: rgba(99, 102, 241, 0.15);
+  color: #c7d2fe;
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.exec-tag.muted {
+  background: rgba(148, 163, 184, 0.1);
+  color: #94a3b8;
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+/* ===============================
+   Título
+   =============================== */
+
+.exec-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #e5e7eb;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===============================
+   Lista Estruturada
+   =============================== */
+
+.exec-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.exec-list > li {
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: #cbd5f5;
+  line-height: 1.5;
+}
+
+.exec-list > li b {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+/* Sublistas (follow-ups / ações) */
+.exec-list ul {
+  margin-top: 6px;
+  margin-left: 14px;
+  padding-left: 10px;
+  border-left: 2px solid rgba(99, 102, 241, 0.25);
+}
+
+.exec-list ul li {
+  font-size: 13px;
+  color: #e5e7eb;
+  margin-bottom: 6px;
+  padding-left: 6px;
+}
+
+/* Texto neutro */
+.muted {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* ===============================
+   Responsividade
+   =============================== */
+
+@media (max-width: 768px) {
+  .executive-block {
+    padding: 16px;
+  }
+
+  .exec-title {
+    font-size: 14px;
+  }
+}
+
+
+/* 🧠 Executive Block */
+.executive-block {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.executive-block h4 {
+  margin: 8px 0 10px;
+  font-size: 14px;
+}
+
+.executive-block ul {
+  padding-left: 16px;
+  margin: 0;
+}
+
+.executive-block li {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.hashtags {
+  font-size: 11px;
+  color: #7aa2ff;
+  font-weight: 600;
+}

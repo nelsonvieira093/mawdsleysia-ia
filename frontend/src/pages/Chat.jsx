@@ -5,6 +5,8 @@ import ChatInput from "../components/ChatInput";
 import api from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 import { getAIContext } from "../services/api";
+import ExecutiveBlock from "../components/ExecutiveBlock";
+
 import "./Chat.css";
 
 export default function Chat() {
@@ -14,8 +16,9 @@ export default function Chat() {
     {
       id: 1,
       role: "assistant",
+      type: "chat",
       content:
-        "👋 Olá! Eu sou o **Agente MAWDSLEYS**, seu assistente de inteligência corporativa.\n\nTenho acesso ao seu **dashboard, follow-ups, pautas, documentos e KPIs**.\n\nComo posso ajudar?",
+        "👋 Olá! Eu sou o **Agente MAWDSLEYS**.\n\nVocê pode conversar normalmente ou registrar pensamentos executivos (Bullet Journal).",
       timestamp: new Date().toISOString(),
     },
   ]);
@@ -25,6 +28,9 @@ export default function Chat() {
   const [aiStatus, setAiStatus] = useState("checking");
   const [aiContext, setAiContext] = useState(null);
   const messagesEndRef = useRef(null);
+
+  // 🔥 NOVO: modo de operação
+  const [mode, setMode] = useState("chat"); // chat | executive
 
   // =============================
   // STATUS + CONTEXTO DA IA
@@ -43,10 +49,8 @@ export default function Chat() {
     try {
       await api.get("/openapi.json");
       setAiStatus("online");
-      console.log("✅ Backend conectado");
     } catch {
       setAiStatus("offline");
-      console.log("❌ Backend offline");
     }
   };
 
@@ -54,9 +58,8 @@ export default function Chat() {
     try {
       const context = await getAIContext(userId);
       setAiContext(context);
-      console.log("🧠 Contexto IA carregado:", context);
     } catch (err) {
-      console.error("❌ Erro ao carregar contexto IA:", err);
+      console.error("Erro ao carregar contexto IA:", err);
     }
   };
 
@@ -67,16 +70,14 @@ export default function Chat() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString("pt-BR", {
+  const formatTime = (dateString) =>
+    new Date(dateString).toLocaleTimeString("pt-BR", {
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
 
   // =============================
-  // ENVIO DE MENSAGEM (CORREÇÃO CIRÚRGICA)
+  // ENVIO DE MENSAGEM (CHAT / EXECUTIVO)
   // =============================
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isTyping || !user?.id) return;
@@ -84,60 +85,69 @@ export default function Chat() {
     const userMessage = {
       id: Date.now(),
       role: "user",
+      type: mode,
       content: inputMessage,
       timestamp: new Date().toISOString(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
-
     const messageToSend = inputMessage;
     setInputMessage("");
     setIsTyping(true);
 
     try {
-      // 🔥 CORREÇÃO 1: Endpoint correto com barra final
-      // 🔥 CORREÇÃO 2: Payload simplificado (o backend atual não usa context)
-      const response = await api.post("/api/v1/chat/", {
-        message: messageToSend, // Apenas message, não user_id nem context
-      });
+      let response;
 
-      console.log("📦 Resposta completa:", response.data); // DEBUG
+      // 🔥 MODO EXECUTIVO (Bullet Journal)
+      if (mode === "executive") {
+        response = await api.post("/ceo/capture", {
+          input: messageToSend,
+        });
 
-      // 🔥 CORREÇÃO 3: Tratamento correto da resposta
-      // Backend retorna: {reply: "texto", status: "success", timestamp: "..."}
-      const replyText =
-        response.data.reply ||
-        response.data.response ||
-        response.data.message ||
-        "Resposta recebida";
+        const data = response.data;
 
-      console.log("📝 Texto extraído:", replyText);
+        const executiveMessage = {
+          id: Date.now() + 1,
+          role: "assistant",
+          type: "executive",
+          timestamp: new Date().toISOString(),
+          data, // JSON estruturado vindo da IA
+        };
 
-      const aiMessage = {
-        id: Date.now() + 1,
-        role: "assistant",
-        content: replyText,
-        timestamp: new Date().toISOString(),
-      };
+        setMessages((prev) => [...prev, executiveMessage]);
+      }
 
-      setMessages((prev) => [...prev, aiMessage]);
+      // 🔹 MODO CHAT NORMAL
+      else {
+        response = await api.post("/api/v1/chat/", {
+          message: messageToSend,
+        });
+
+        const replyText =
+          response.data.reply ||
+          response.data.response ||
+          response.data.message ||
+          "Resposta recebida";
+
+        const aiMessage = {
+          id: Date.now() + 1,
+          role: "assistant",
+          type: "chat",
+          content: replyText,
+          timestamp: new Date().toISOString(),
+        };
+
+        setMessages((prev) => [...prev, aiMessage]);
+      }
     } catch (err) {
-      console.error("❌ Erro no chat:", err);
-      console.error("❌ Detalhes do erro:", {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message,
-      });
-
       const errorMessage = {
         id: Date.now() + 1,
         role: "assistant",
+        type: "chat",
         content:
           aiStatus === "offline"
-            ? "🔌 **IA Offline**\n\nO backend está indisponível no momento."
-            : `⚠️ **Erro técnico**\n\nStatus: ${
-                err.response?.status || "N/A"
-              }\nDetalhes: ${err.response?.data?.detail || err.message}`,
+            ? "🔌 **IA Offline**\n\nO backend está indisponível."
+            : `⚠️ **Erro técnico**\n\n${err.response?.data?.detail || err.message}`,
         timestamp: new Date().toISOString(),
       };
 
@@ -159,11 +169,54 @@ export default function Chat() {
       {
         id: 1,
         role: "assistant",
+        type: "chat",
         content:
-          "👋 Nova conversa iniciada.\n\nEstou com acesso total ao sistema. Como posso ajudar?",
+          "👋 Nova sessão iniciada.\n\nSelecione Chat ou Bullet Journal Executivo.",
         timestamp: new Date().toISOString(),
       },
     ]);
+  };
+
+  // =============================
+  // RENDER BLOCO EXECUTIVO
+  // =============================
+  const renderExecutiveBlock = (data) => {
+    if (!data) return null;
+
+    return (
+      <div className="executive-block">
+        <div className="exec-tags">
+          {data.hashtags?.map((tag) => (
+            <span key={tag} className="exec-tag">
+              #{tag}
+            </span>
+          ))}
+        </div>
+
+        <h4>🧠 Resumo Estruturado</h4>
+
+        <ul>
+          <li>
+            <b>Síntese:</b> {data.summary}
+          </li>
+          <li>
+            <b>Follow-ups:</b> {data.followups?.join(", ")}
+          </li>
+          <li>
+            <b>Ritos:</b> {data.rituals?.join(", ")}
+          </li>
+          <li>
+            <b>Diretorias:</b> {data.directors?.join(", ")}
+          </li>
+          <li>
+            <b>Ações:</b> {data.actions?.join(", ")}
+          </li>
+          <li>
+            <b>Registro:</b> {data.register_location}
+          </li>
+        </ul>
+      </div>
+    );
   };
 
   // =============================
@@ -176,16 +229,27 @@ export default function Chat() {
       <div className="chat-main-area">
         <div className="chat-header">
           <div className="header-left">
-            <h1>Chat MAWDSLEYS</h1>
+            <h1>MAWDSLEYS</h1>
             <div className={`ai-status ${aiStatus}`}>
               <span className="status-dot"></span>
               {aiStatus === "online" ? "IA Online" : "IA Offline"}
             </div>
           </div>
 
-          <button className="clear-btn" onClick={clearChat} disabled={isTyping}>
-            🗑️ Nova Conversa
-          </button>
+          <div className="header-actions">
+            <select value={mode} onChange={(e) => setMode(e.target.value)}>
+              <option value="chat">💬 Chat</option>
+              <option value="executive">📘 Bullet Journal (CEO)</option>
+            </select>
+
+            <button
+              className="clear-btn"
+              onClick={clearChat}
+              disabled={isTyping}
+            >
+              🗑️ Nova Sessão
+            </button>
+          </div>
         </div>
 
         <div className="messages-container">
@@ -199,24 +263,31 @@ export default function Chat() {
               <div className="message-avatar">
                 {message.role === "user" ? "👤" : "🤖"}
               </div>
+
               <div className="message-content">
                 <div className="message-header">
                   <strong>
-                    {message.role === "user" ? "Você" : "Agente MAWDSLEYS"}
+                    {message.role === "user" ? "Você" : "MAWDSLEYS"}
                   </strong>
                   <span>{formatTime(message.timestamp)}</span>
                 </div>
+
                 <div className="message-text">
-                  {message.content.split("\n").map((line, i) => (
-                    <div key={i}>{line}</div>
-                  ))}
+                  {message.type === "executive" ? (
+                    <ExecutiveBlock data={message.data} />
+                  ) : (
+                    message.content
+                      .split("\n")
+                      .map((line, i) => <div key={i}>{line}</div>)
+                  )}
                 </div>
               </div>
             </div>
           ))}
 
-          {isTyping && <div className="typing-indicator">🤖 Digitando...</div>}
-
+          {isTyping && (
+            <div className="typing-indicator">🤖 Processando...</div>
+          )}
           <div ref={messagesEndRef} />
         </div>
 

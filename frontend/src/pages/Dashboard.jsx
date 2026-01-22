@@ -5,6 +5,7 @@ import api from "../services/api";
 import "./Dashboard.css";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import ExecutiveBlock from "../components/ExecutiveBlock";
 
 import {
   ResponsiveContainer,
@@ -41,6 +42,17 @@ export default function Dashboard() {
   const [followups, setFollowups] = useState([]);
   const [meetings, setMeetings] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // =========================
+  // 🔥 VISÃO EXECUTIVA (NOVO)
+  // =========================
+  const [executiveItems, setExecutiveItems] = useState([]);
+  const [executiveView, setExecutiveView] = useState("daily"); // daily | weekly | board
+
+  // =========================
+  // 🔔 ALERTAS VISUAIS
+  // =========================
+  const [alerts, setAlerts] = useState([]);
 
   // =========================
   // FALLBACK DATA (DEMO SAFE)
@@ -82,6 +94,38 @@ export default function Dashboard() {
     loadDashboard();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // 🔥 Atualiza visão executiva automaticamente
+  useEffect(() => {
+    loadExecutiveView();
+  }, [executiveView]);
+
+  // 🔔 Carrega alertas de follow-up
+  useEffect(() => {
+    loadAlerts();
+  }, []);
+
+  async function loadExecutiveView() {
+    try {
+      const response = await api.get("/api/executive/dashboard", {
+        params: { view: executiveView },
+      });
+      setExecutiveItems(response.data.items || []);
+    } catch (err) {
+      console.error("Erro ao carregar visão executiva:", err);
+      setExecutiveItems([]);
+    }
+  }
+
+  async function loadAlerts() {
+    try {
+      const response = await api.get("/api/followup-alerts");
+      setAlerts(response.data || []);
+    } catch (err) {
+      console.error("Erro ao carregar alertas:", err);
+      setAlerts([]);
+    }
+  }
 
   async function exportDashboardPDF() {
     try {
@@ -151,7 +195,7 @@ export default function Dashboard() {
           user_id: userId,
           trigger: "dashboard_button",
           timestamp: new Date().toISOString(),
-        }
+        },
       );
 
       console.log("✅ Automação executada:", result.data);
@@ -257,6 +301,13 @@ export default function Dashboard() {
           </div>
         </header>
 
+        {/* 🔔 ALERTAS VISUAIS - NOVA IMPLEMENTAÇÃO */}
+        {alerts.length > 0 && (
+          <div className="followup-alert-banner">
+            ⚠️ {alerts.length} follow-up(s) em atraso precisam de atenção
+          </div>
+        )}
+
         {automationStatus === "success" && (
           <div className="alert success">
             🤖 Automação executada com sucesso
@@ -275,6 +326,38 @@ export default function Dashboard() {
               value={k.value}
               trend={k.trend || (idx % 2 ? "down" : "up")}
             />
+          ))}
+        </section>
+
+        {/* 📘 DASHBOARD EXECUTIVO - NOVA IMPLEMENTAÇÃO */}
+        <section className="executive-dashboard">
+          <div className="dashboard-tabs">
+            <button
+              className={executiveView === "daily" ? "active" : ""}
+              onClick={() => setExecutiveView("daily")}
+            >
+              Daily Log
+            </button>
+            <button
+              className={executiveView === "weekly" ? "active" : ""}
+              onClick={() => setExecutiveView("weekly")}
+            >
+              Weekly Digest
+            </button>
+            <button
+              className={executiveView === "board" ? "active" : ""}
+              onClick={() => setExecutiveView("board")}
+            >
+              Board Report
+            </button>
+          </div>
+
+          {executiveItems.length === 0 && (
+            <div className="muted">Nenhum registro executivo encontrado</div>
+          )}
+
+          {executiveItems.map((item) => (
+            <ExecutiveBlock key={item.id} data={item} />
           ))}
         </section>
 
