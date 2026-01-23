@@ -928,6 +928,16 @@ async def chat_handler_legacy(data: ChatRequestLegacy):
 
 app.include_router(chat_router_legacy)
 
+@app.get("/api/v1/chat/health")
+async def production_chat_health():
+    return {
+        "status": "online",
+        "service": "mawdsleys-chat",
+        "model": "gpt-4o-mini",
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
+
 # =====================================================
 # STARTUP MESSAGE
 # =====================================================
