@@ -223,3 +223,29 @@ python -m uvicorn main:app --reload
 
 ative o virtualenv
 source venv/Scripts/activate
+
+
+No Fly.io, o comando não é fly, é flyctl.
+
+👉 Comando correto:
+
+flyctl auth login
+
+
+Se quiser confirmar que está instalado:
+
+flyctl version
+Quando logar com sucesso, rode na pasta do backend:
+
+flyctl deploy
+
+Para o Vercel (frontend)
+
+Login:
+
+vercel login
+
+
+Deploy:
+
+vercel --prod

@@ -37,11 +37,15 @@ load_dotenv()
 # OPENAI CONFIG
 # =====================================================
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if not OPENAI_API_KEY or len(OPENAI_API_KEY) < 20:
-    raise RuntimeError("❌ OPENAI_API_KEY não encontrada ou inválida")
 
-openai.api_key = OPENAI_API_KEY
-print("🤖 OpenAI configurada com sucesso (SDK CLÁSSICO)")
+if OPENAI_API_KEY and len(OPENAI_API_KEY) > 20:
+    openai.api_key = OPENAI_API_KEY
+    OPENAI_ENABLED = True
+    print("🤖 OpenAI configurada com sucesso")
+else:
+    OPENAI_ENABLED = False
+    print("⚠️ OPENAI_API_KEY não encontrada — IA rodando em modo fallback")
+
 
 # =====================================================
 # LIFESPAN
