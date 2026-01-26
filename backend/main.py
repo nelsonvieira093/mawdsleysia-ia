@@ -4,7 +4,6 @@ from fastapi import FastAPI, APIRouter, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
-import openai
 import os
 import sys
 from pathlib import Path
@@ -12,14 +11,43 @@ from datetime import datetime
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from api.routes import chat_web
-
+from openai import OpenAI
 
 # =====================================================
-# HEALTH CHECK ULTRA-LEVE (NÃO USA MIDDLEWARE / BANCO)
+# INICIALIZAÇÃO SEGURA DO CLIENT OPENAI
 # =====================================================
+def get_openai_client():
+    """Inicializa o cliente OpenAI de forma segura"""
+    try:
+        # Verifica se a chave existe
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            print("⚠️ OPENAI_API_KEY não encontrada — IA em modo fallback")
+            return None
+        
+        # Inicializa cliente com SDK novo
+        client = OpenAI(api_key=api_key)
+        
+        # Testa conexão básica
+        test_response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": "ping"}],
+            max_tokens=1
+        )
+        
+        if test_response.choices:
+            print("✅ OpenAI configurada com sucesso (SDK novo)")
+            return client
+        else:
+            print("⚠️ OpenAI retornou resposta vazia")
+            return None
+            
+    except Exception as e:
+        print(f"⚠️ Erro ao configurar OpenAI: {e}")
+        return None
 
-
-
+# Inicializa cliente globalmente
+OPENAI_CLIENT = get_openai_client()
 
 # =====================================================
 # PATHS & ENV
@@ -32,20 +60,6 @@ print(f"📁 Backend dir: {BASE_DIR}")
 
 # Carrega variáveis de ambiente
 load_dotenv()
-
-# =====================================================
-# OPENAI CONFIG
-# =====================================================
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
-if OPENAI_API_KEY and len(OPENAI_API_KEY) > 20:
-    openai.api_key = OPENAI_API_KEY
-    OPENAI_ENABLED = True
-    print("🤖 OpenAI configurada com sucesso")
-else:
-    OPENAI_ENABLED = False
-    print("⚠️ OPENAI_API_KEY não encontrada — IA rodando em modo fallback")
-
 
 # =====================================================
 # LIFESPAN
@@ -77,7 +91,8 @@ async def health_lite():
     return {
         "status": "ok",
         "service": "mawdsleys-backend",
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.utcnow().isoformat(),
+        "openai_status": "online" if OPENAI_CLIENT else "fallback"
     }
 
 # =====================================================
@@ -97,7 +112,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # 2️⃣ MIDDLEWARE DE ACTIVITY LOG
 try:
@@ -128,9 +142,6 @@ from api.routes import (
     followup_alerts
 )
 
-
-
-
 # Importe o router de admin auth (se existir)
 try:
     from api.routes.admin_auth import router as admin_auth_router
@@ -149,7 +160,7 @@ async def root():
         "status": "online",
         "version": "2.0.0",
         "timestamp": datetime.utcnow().isoformat(),
-        "openai": True,
+        "openai": OPENAI_CLIENT is not None,
         "docs": "/docs",
         "health": "/health",
         "info": "/info",
@@ -160,7 +171,8 @@ async def root():
 async def health():
     return {
         "status": "ok",
-        "openai": True,
+        "openai": OPENAI_CLIENT is not None,
+        "openai_status": "online" if OPENAI_CLIENT else "fallback",
         "timestamp": datetime.utcnow().isoformat(),
         "database": "connected",
         "middleware": {
@@ -176,7 +188,8 @@ async def info():
         "app": "MAWDSLEYS Backend",
         "version": "2.0.0",
         "environment": os.getenv("ENVIRONMENT", "development"),
-        "openai_configured": bool(OPENAI_API_KEY),
+        "openai_configured": OPENAI_CLIENT is not None,
+        "openai_status": "online" if OPENAI_CLIENT else "fallback",
         "admin_auth_available": ADMIN_AUTH_AVAILABLE,
         "timestamp": datetime.utcnow().isoformat(),
         "features": {
@@ -189,6 +202,7 @@ async def info():
             "docs": "/docs",
             "health": "/health",
             "chat_intelligent": "/api/v1/chat",
+            "chat_health": "/api/v1/chat/health",
             "chat_legacy": "/api/v1/chat-legacy",
             "meetings": "/meetings",
             "auth": "/api/v1/auth",
@@ -206,11 +220,14 @@ async def test_connection():
         "server_time": datetime.utcnow().isoformat(),
         "client_ip": "127.0.0.1",
         "status": "active",
+        "openai_status": "online" if OPENAI_CLIENT else "fallback",
         "endpoints_available": [
             "/",
             "/docs",
             "/health",
             "/info",
+            "/api/v1/chat",
+            "/api/v1/chat/health",
             "/api/v1/chat-legacy",
             "/api/v1/auth/login",
             "/meetings"
@@ -220,7 +237,11 @@ async def test_connection():
 @app.get("/ping")
 async def ping():
     """Endpoint ultra rápido para health check"""
-    return {"status": "pong", "timestamp": datetime.utcnow().isoformat()}
+    return {
+        "status": "pong",
+        "timestamp": datetime.utcnow().isoformat(),
+        "openai_status": "online" if OPENAI_CLIENT else "fallback"
+    }
 
 # =====================================================
 # ENDPOINT DE TESTE FUNCIONAL
@@ -233,7 +254,8 @@ async def test_auto_endpoint():
         "timestamp": datetime.utcnow().isoformat(),
         "system": "MAWDSLEYS",
         "endpoint": "/test-auto",
-        "test": "automation-ready"
+        "test": "automation-ready",
+        "openai_status": "online" if OPENAI_CLIENT else "fallback"
     }
 
 # =====================================================
@@ -286,7 +308,8 @@ async def test_automation_public():
             "message": "Teste de módulos realizado",
             "timestamp": datetime.utcnow().isoformat(),
             "modules": modules,
-            "system": "MAWDSLEYS Backend 2.0.0"
+            "system": "MAWDSLEYS Backend 2.0.0",
+            "openai_status": "online" if OPENAI_CLIENT else "fallback"
         }
         
     except Exception as e:
@@ -297,7 +320,8 @@ async def test_automation_public():
         return {
             "status": "error",
             "message": str(e),
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.utcnow().isoformat(),
+            "openai_status": "online" if OPENAI_CLIENT else "fallback"
         }
 
 # =====================================================
@@ -363,7 +387,6 @@ async def get_followup_detail(followup_id: str):
     }
 
 # 🔽🔽 COLOQUE AQUI, LOGO ABAIXO 🔽🔽
-
 @followups_api.put("/{followup_id}")
 @followups_api.patch("/{followup_id}")
 async def update_followup(followup_id: str, payload: dict):
@@ -383,7 +406,6 @@ async def update_followup(followup_id: str, payload: dict):
             "updated_at": datetime.utcnow().isoformat()
         }
     }
-
 
 @followups_api.post("/{followup_id}/close")
 async def close_followup_endpoint(followup_id: str):
@@ -615,8 +637,6 @@ async def followup_detail_compat(followup_id: str):
     """
     result = await get_followup_detail(followup_id)
     return result["data"]
-
-
 
 # 2. DELIVERABLES - Compatibilidade garantida
 @app.get("/deliverables")
@@ -852,30 +872,33 @@ if ADMIN_AUTH_AVAILABLE:
     print("✅ Admin auth routes registradas")
 
 # =====================================================
-# =====================================================
-# CHAT API PARA PRODUÇÃO (O QUE O FRONTEND ESPERA)
+# CHAT API PARA PRODUÇÃO (SDK NOVO OPENAI)
 # =====================================================
 
 @app.post("/api/v1/chat/")
 async def production_chat_endpoint(data: dict):
-    """Endpoint que o frontend está chamando"""
+    """Endpoint que o frontend está chamando (SDK NOVO)"""
     message = data.get("message", "")
     
     try:
-        # Tenta usar OpenAI se disponível
-        import openai
-        response = openai.ChatCompletion.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "Você é o assistente corporativo MAWDSLEYS. Responda de forma profissional."},
-                {"role": "user", "content": message}
-            ],
-            temperature=0.4,
-            max_tokens=500
-        )
-        reply = response.choices[0].message["content"]
+        if OPENAI_CLIENT:
+            # Usa SDK novo OpenAI
+            response = OPENAI_CLIENT.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "Você é o assistente corporativo MAWDSLEYS. Responda de forma profissional."},
+                    {"role": "user", "content": message}
+                ],
+                temperature=0.4,
+                max_tokens=500
+            )
+            reply = response.choices[0].message.content
+        else:
+            # Fallback se OpenAI não estiver disponível
+            raise Exception("OpenAI client not available")
+            
     except Exception:
-        # Fallback se OpenAI falhar
+        # Fallback amigável
         if "oi" in message.lower() or "olá" in message.lower():
             reply = "��� Olá! Eu sou o Agente MAWDSLEYS."
         else:
@@ -884,13 +907,22 @@ async def production_chat_endpoint(data: dict):
     return {
         "reply": reply,
         "status": "success",
+        "openai_used": OPENAI_CLIENT is not None,
         "timestamp": datetime.utcnow().isoformat()
     }
 
 @app.get("/api/v1/chat/health")
 async def production_chat_health():
-    return {"status": "healthy", "endpoint": "/api/v1/chat/"}
-# CHAT API LEGACY (FALLBACK)
+    """Health check específico para chat"""
+    return {
+        "status": "healthy" if OPENAI_CLIENT else "fallback",
+        "endpoint": "/api/v1/chat/",
+        "openai_available": OPENAI_CLIENT is not None,
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
+# =====================================================
+# CHAT API LEGACY (FALLBACK - SDK NOVO)
 # =====================================================
 chat_router_legacy = APIRouter(prefix="/api/v1/chat-legacy", tags=["Chat Legacy"])
 
@@ -901,55 +933,62 @@ class ChatRequestLegacy(BaseModel):
 
 @chat_router_legacy.get("/health")
 async def chat_health_legacy():
-    return {"status": "online", "openai": True, "model": "gpt-4o-mini"}
+    return {
+        "status": "online",
+        "openai": OPENAI_CLIENT is not None,
+        "model": "gpt-4o-mini",
+        "timestamp": datetime.utcnow().isoformat()
+    }
 
 @chat_router_legacy.post("/")
 async def chat_handler_legacy(data: ChatRequestLegacy):
     try:
-        response = openai.ChatCompletion.create(
-            model=data.model,
-            messages=[
-                {"role": "system", "content": "Você é o assistente corporativo MAWDSLEYS. Responda de forma profissional e útil."},
-                {"role": "user", "content": data.message}
-            ],
-            temperature=data.temperature,
-            max_tokens=800
-        )
-        return {
-            "reply": response.choices[0].message["content"],
-            "model": data.model,
-            "tokens_used": response.usage.total_tokens if hasattr(response, 'usage') else None
-        }
+        if OPENAI_CLIENT:
+            # Usa SDK novo
+            response = OPENAI_CLIENT.chat.completions.create(
+                model=data.model,
+                messages=[
+                    {"role": "system", "content": "Você é o assistente corporativo MAWDSLEYS. Responda de forma profissional e útil."},
+                    {"role": "user", "content": data.message}
+                ],
+                temperature=data.temperature,
+                max_tokens=800
+            )
+            
+            reply = response.choices[0].message.content
+            tokens_used = response.usage.total_tokens if response.usage else None
+            
+            return {
+                "reply": reply,
+                "model": data.model,
+                "tokens_used": tokens_used,
+                "openai_sdk": "new"
+            }
+        else:
+            raise HTTPException(
+                status_code=503,
+                detail="OpenAI não disponível no momento"
+            )
+            
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500, 
-            detail=f"Erro OpenAI: {str(e)}"
+            detail=f"Erro no processamento: {str(e)}"
         )
 
 app.include_router(chat_router_legacy)
 
-#@app.get("/api/v1/chat/health")
-#async def production_chat_health():
- #   return {
-  #      "status": "online",
-   #     "service": "mawdsleys-chat",
-    #    "model": "gpt-4o-mini",
-     #   "timestamp": datetime.utcnow().isoformat()
-    #}
-
-@app.get("/api/v1/chat/health")
-async def production_chat_health():
-    return {"status": "healthy", "endpoint": "/api/v1/chat/"}
-
-
 # =====================================================
 # STARTUP MESSAGE
 # =====================================================
-print("✅ MAWDSLEYS API pronta com IA REAL (ONLINE)")
+print("✅ MAWDSLEYS API pronta com IA REAL (SDK NOVO)")
 print(f"📚 Documentação: http://localhost:8000/docs")
 print(f"📋 OpenAPI JSON: http://localhost:8000/openapi.json")
-print(f"🤖 Chat Inteligente: /api/v1/chat (com memória)")
-print(f"🤖 Chat Legacy: /api/v1/chat-legacy (simples)")
+print(f"🤖 Chat Inteligente: /api/v1/chat (SDK novo)")
+print(f"🤖 Chat Health: /api/v1/chat/health")
+print(f"🤖 Chat Legacy: /api/v1/chat-legacy")
 print(f"📅 Reuniões: /meetings (com automação)")
 print(f"🔐 Auth endpoints: /api/v1/auth")
 if ADMIN_AUTH_AVAILABLE:
@@ -971,6 +1010,7 @@ print(f"   • /meetings/ - Frontend compatibility")
 print(f"   • /kpis/overview - Frontend compatibility")
 print(f"   • /knowledge/items - Frontend compatibility")
 print(f"   • /knowledge/stats - Frontend compatibility")
+print(f"🔧 OpenAI Status: {'✅ ONLINE' if OPENAI_CLIENT else '⚠️ FALLBACK'}")
 
 # =====================================================
 # RUN
