@@ -9,7 +9,7 @@ except ImportError:
 
 # IMPORTS opcionais — se seus outros modelos existirem, mova-os para backend/models/ e descomente
 # try:
-#     from database.models import FollowUp
+#     from database.db_models import FollowUp
 #     from models.kpi import KPI
 #     from models.meeting import Meeting
 # except ImportError:

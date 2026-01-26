@@ -9,6 +9,10 @@ from core.memory.memory_engine import MemoryEngine
 from core.events.activity_log import ActivityEvent
 from db.repositories.activity_log_repository import ActivityLogRepository
 
+# ✅ CORRETO:
+from database.db_models import FollowUp
+from schemas.followup import FollowUpOut, FollowUpStatus
+
 
 class FollowUpAgent:
     def __init__(self, db: Session):

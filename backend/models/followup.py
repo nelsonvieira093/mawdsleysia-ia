@@ -1,12 +1,5 @@
 # backend/models/followup.py
-"""
-Alias seguro do model FollowUp.
+from .capture import Capture
+from database.db_models import FollowUp
 
-Este arquivo existe apenas para compatibilidade de imports antigos.
-A definição REAL do model está em:
-    backend/database/models.py
-"""
-
-from database.models import FollowUp
-
-__all__ = ["FollowUp"]
+__all__ = ["Capture", "FollowUp"]

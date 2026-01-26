@@ -1,3 +1,2 @@
-from .capture import Capture
-from database.models import FollowUp
-
+# NÃO IMPORTAR NADA AQUI
+# Este arquivo existe apenas para declarar o pacote

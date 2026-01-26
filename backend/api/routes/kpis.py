@@ -11,7 +11,7 @@ from api.routes.auth import require_any_auth
 from db.repositories.kpi_repository import KPIRepository
 from controllers.kpi_controller import KPIController
 
-from models.followup import FollowUp
+from database.db_models import FollowUp
 from models.ritual import Ritual
 from db.models.activity_log import ActivityLog
 

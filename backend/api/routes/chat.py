@@ -20,7 +20,7 @@ from db.repositories.kpi_repository import KPIRepository
 
 from models.meeting import Meeting
 from models.note import Note
-from models.followup import FollowUp
+from database.db_models import FollowUp
 
 # 🔹 OpenAI
 import openai

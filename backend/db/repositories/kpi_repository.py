@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import date, timedelta
 
-from models.followup import FollowUp
+from database.db_models import FollowUp
 
 
 class KPIRepository:

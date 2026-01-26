@@ -8,7 +8,7 @@ from services.ai_service import analyze_text
 # MODELS
 from models.capture import Capture
 from models.note import Note
-from database.models import FollowUp
+from database.db_models import FollowUp
 
 from models.tag import Tag
 from models.ritual import Ritual

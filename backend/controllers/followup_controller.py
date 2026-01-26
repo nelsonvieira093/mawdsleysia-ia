@@ -19,7 +19,10 @@ from uuid import UUID as UUIDType
 from datetime import date
 
 from db.repositories.followup_repository import FollowUpRepository
-from models.followup import FollowUp
+
+# ✅ CORRETO:
+from database.db_models import FollowUp, User, Note  # Do ARQUIVO models.py
+from schemas.followup import FollowUpCreate, FollowUpUpdate  # Do diretório schemas/
 
 
 class FollowUpController:

@@ -24,7 +24,11 @@ from datetime import date, timedelta
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 
-from models.followup import FollowUp
+
+# ✅ CORRETO:
+# ✅ CORRETO:
+from database.db_models import FollowUp
+from schemas.followup import FollowUpCreate, FollowUpUpdate, FollowUpOut
 
 
 class FollowUpRepository:
