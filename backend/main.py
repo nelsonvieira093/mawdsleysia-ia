@@ -16,8 +16,16 @@ from openai import OpenAI
 # =====================================================
 # INICIALIZAÇÃO SEGURA DO CLIENT OPENAI
 # =====================================================
+OPENAI_CLIENT = None  # 🔴 REMOVIDA A INICIALIZAÇÃO GLOBAL
+
 def get_openai_client():
-    """Inicializa o cliente OpenAI de forma segura"""
+    """Inicializa o cliente OpenAI de forma segura (sob demanda)"""
+    global OPENAI_CLIENT
+    
+    # Se já existe, reutiliza
+    if OPENAI_CLIENT is not None:
+        return OPENAI_CLIENT
+    
     try:
         # Verifica se a chave existe
         api_key = os.getenv("OPENAI_API_KEY")
@@ -28,26 +36,16 @@ def get_openai_client():
         # Inicializa cliente com SDK novo
         client = OpenAI(api_key=api_key)
         
-        # Testa conexão básica
-        test_response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": "ping"}],
-            max_tokens=1
-        )
+        # ✅ REMOVIDA A CHAMADA DE TESTE QUE CAUSAVA ERRO NO STARTUP
+        # Agora só cria o cliente, sem chamadas de rede
         
-        if test_response.choices:
-            print("✅ OpenAI configurada com sucesso (SDK novo)")
-            return client
-        else:
-            print("⚠️ OpenAI retornou resposta vazia")
-            return None
+        OPENAI_CLIENT = client
+        print("✅ OpenAI client inicializado sob demanda")
+        return client
             
     except Exception as e:
-        print(f"⚠️ Erro ao configurar OpenAI: {e}")
+        print(f"⚠️ Erro ao inicializar OpenAI: {e}")
         return None
-
-# Inicializa cliente globalmente
-OPENAI_CLIENT = get_openai_client()
 
 # =====================================================
 # PATHS & ENV
@@ -88,11 +86,12 @@ app = FastAPI(
 # =====================================================
 @app.get("/health-lite", include_in_schema=False)
 async def health_lite():
+    client = get_openai_client()  # ✅ Chamada sob demanda
     return {
         "status": "ok",
         "service": "mawdsleys-backend",
         "timestamp": datetime.utcnow().isoformat(),
-        "openai_status": "online" if OPENAI_CLIENT else "fallback"
+        "openai_status": "online" if client else "fallback"
     }
 
 # =====================================================
@@ -155,12 +154,13 @@ except ImportError:
 # =====================================================
 @app.get("/")
 async def root():
+    client = get_openai_client()  # ✅ Chamada sob demanda
     return {
         "name": "MAWDSLEYS API",
         "status": "online",
         "version": "2.0.0",
         "timestamp": datetime.utcnow().isoformat(),
-        "openai": OPENAI_CLIENT is not None,
+        "openai": client is not None,
         "docs": "/docs",
         "health": "/health",
         "info": "/info",
@@ -169,10 +169,11 @@ async def root():
 
 @app.get("/health")
 async def health():
+    client = get_openai_client()  # ✅ Chamada sob demanda
     return {
         "status": "ok",
-        "openai": OPENAI_CLIENT is not None,
-        "openai_status": "online" if OPENAI_CLIENT else "fallback",
+        "openai": client is not None,
+        "openai_status": "online" if client else "fallback",
         "timestamp": datetime.utcnow().isoformat(),
         "database": "connected",
         "middleware": {
@@ -184,12 +185,13 @@ async def health():
 @app.get("/info")
 async def info():
     """Informações do sistema"""
+    client = get_openai_client()  # ✅ Chamada sob demanda
     return {
         "app": "MAWDSLEYS Backend",
         "version": "2.0.0",
         "environment": os.getenv("ENVIRONMENT", "development"),
-        "openai_configured": OPENAI_CLIENT is not None,
-        "openai_status": "online" if OPENAI_CLIENT else "fallback",
+        "openai_configured": client is not None,
+        "openai_status": "online" if client else "fallback",
         "admin_auth_available": ADMIN_AUTH_AVAILABLE,
         "timestamp": datetime.utcnow().isoformat(),
         "features": {
@@ -214,13 +216,14 @@ async def info():
 @app.get("/test-connection")
 async def test_connection():
     """Endpoint para testar se a API responde"""
+    client = get_openai_client()  # ✅ Chamada sob demanda
     return {
         "success": True,
         "message": "✅ Conexão estabelecida com sucesso!",
         "server_time": datetime.utcnow().isoformat(),
         "client_ip": "127.0.0.1",
         "status": "active",
-        "openai_status": "online" if OPENAI_CLIENT else "fallback",
+        "openai_status": "online" if client else "fallback",
         "endpoints_available": [
             "/",
             "/docs",
@@ -237,10 +240,11 @@ async def test_connection():
 @app.get("/ping")
 async def ping():
     """Endpoint ultra rápido para health check"""
+    client = get_openai_client()  # ✅ Chamada sob demanda
     return {
         "status": "pong",
         "timestamp": datetime.utcnow().isoformat(),
-        "openai_status": "online" if OPENAI_CLIENT else "fallback"
+        "openai_status": "online" if client else "fallback"
     }
 
 # =====================================================
@@ -248,6 +252,7 @@ async def ping():
 # =====================================================
 @app.post("/test-auto")
 async def test_auto_endpoint():
+    client = get_openai_client()  # ✅ Chamada sob demanda
     return {
         "status": "success",
         "message": "Endpoint de teste funcional",
@@ -255,7 +260,7 @@ async def test_auto_endpoint():
         "system": "MAWDSLEYS",
         "endpoint": "/test-auto",
         "test": "automation-ready",
-        "openai_status": "online" if OPENAI_CLIENT else "fallback"
+        "openai_status": "online" if client else "fallback"
     }
 
 # =====================================================
@@ -303,13 +308,15 @@ async def test_automation_public():
         print("🎯 TESTE COMPLETO!")
         print("="*60)
         
+        client = get_openai_client()  # ✅ Chamada sob demanda
+        
         return {
             "status": "success",
             "message": "Teste de módulos realizado",
             "timestamp": datetime.utcnow().isoformat(),
             "modules": modules,
             "system": "MAWDSLEYS Backend 2.0.0",
-            "openai_status": "online" if OPENAI_CLIENT else "fallback"
+            "openai_status": "online" if client else "fallback"
         }
         
     except Exception as e:
@@ -317,11 +324,13 @@ async def test_automation_public():
         import traceback
         traceback.print_exc()
         
+        client = get_openai_client()  # ✅ Chamada sob demanda
+        
         return {
             "status": "error",
             "message": str(e),
             "timestamp": datetime.utcnow().isoformat(),
-            "openai_status": "online" if OPENAI_CLIENT else "fallback"
+            "openai_status": "online" if client else "fallback"
         }
 
 # =====================================================
@@ -881,9 +890,11 @@ async def production_chat_endpoint(data: dict):
     message = data.get("message", "")
     
     try:
-        if OPENAI_CLIENT:
+        client = get_openai_client()  # ✅ AGORA CHAMANDO A FUNÇÃO SOB DEMANDA
+        
+        if client:
             # Usa SDK novo OpenAI
-            response = OPENAI_CLIENT.chat.completions.create(
+            response = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": "Você é o assistente corporativo MAWDSLEYS. Responda de forma profissional."},
@@ -904,20 +915,22 @@ async def production_chat_endpoint(data: dict):
         else:
             reply = f"��� MAWDSLEYS Production\n\nRecebi: '{message}'\n\nSistema em funcionamento."
     
+    client = get_openai_client()  # ✅ Chamada sob demanda para verificar status
     return {
         "reply": reply,
         "status": "success",
-        "openai_used": OPENAI_CLIENT is not None,
+        "openai_used": client is not None,
         "timestamp": datetime.utcnow().isoformat()
     }
 
 @app.get("/api/v1/chat/health")
 async def production_chat_health():
     """Health check específico para chat"""
+    client = get_openai_client()  # ✅ Chamada sob demanda
     return {
-        "status": "healthy" if OPENAI_CLIENT else "fallback",
+        "status": "healthy" if client else "fallback",
         "endpoint": "/api/v1/chat/",
-        "openai_available": OPENAI_CLIENT is not None,
+        "openai_available": client is not None,
         "timestamp": datetime.utcnow().isoformat()
     }
 
@@ -933,9 +946,10 @@ class ChatRequestLegacy(BaseModel):
 
 @chat_router_legacy.get("/health")
 async def chat_health_legacy():
+    client = get_openai_client()  # ✅ Chamada sob demanda
     return {
         "status": "online",
-        "openai": OPENAI_CLIENT is not None,
+        "openai": client is not None,
         "model": "gpt-4o-mini",
         "timestamp": datetime.utcnow().isoformat()
     }
@@ -943,9 +957,11 @@ async def chat_health_legacy():
 @chat_router_legacy.post("/")
 async def chat_handler_legacy(data: ChatRequestLegacy):
     try:
-        if OPENAI_CLIENT:
+        client = get_openai_client()  # ✅ Chamada sob demanda
+        
+        if client:
             # Usa SDK novo
-            response = OPENAI_CLIENT.chat.completions.create(
+            response = client.chat.completions.create(
                 model=data.model,
                 messages=[
                     {"role": "system", "content": "Você é o assistente corporativo MAWDSLEYS. Responda de forma profissional e útil."},
@@ -983,6 +999,7 @@ app.include_router(chat_router_legacy)
 # =====================================================
 # STARTUP MESSAGE
 # =====================================================
+client = get_openai_client()  # ✅ Chamada sob demanda para status inicial
 print("✅ MAWDSLEYS API pronta com IA REAL (SDK NOVO)")
 print(f"📚 Documentação: http://localhost:8000/docs")
 print(f"📋 OpenAPI JSON: http://localhost:8000/openapi.json")
@@ -1010,7 +1027,7 @@ print(f"   • /meetings/ - Frontend compatibility")
 print(f"   • /kpis/overview - Frontend compatibility")
 print(f"   • /knowledge/items - Frontend compatibility")
 print(f"   • /knowledge/stats - Frontend compatibility")
-print(f"🔧 OpenAI Status: {'✅ ONLINE' if OPENAI_CLIENT else '⚠️ FALLBACK'}")
+print(f"🔧 OpenAI Status: {'✅ ONLINE' if client else '⚠️ FALLBACK'}")
 
 # =====================================================
 # RUN

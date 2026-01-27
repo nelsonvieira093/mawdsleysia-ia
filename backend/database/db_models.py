@@ -1,5 +1,3 @@
-# E:\MAWDSLEYS-AGENTE\backend\database\db_models.py
-
 from sqlalchemy import (
     Column,
     String,
@@ -10,6 +8,7 @@ from sqlalchemy import (
     Enum as SQLEnum,
     Integer,
     Boolean,
+    JSON,
 )
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import UUID
@@ -86,7 +85,6 @@ class Note(Base):
         nullable=False,
     )
 
-    # relacionamento reverso
     followups = relationship(
         "FollowUp",
         back_populates="note",
@@ -108,7 +106,7 @@ class FollowUp(Base):
     )
 
     owner_id = Column(
-        Integer,
+        UUID(as_uuid=True),  # 🔴 CORREÇÃO CRÍTICA
         ForeignKey("users.id", ondelete="SET NULL"),
         nullable=True,
         index=True,
@@ -148,7 +146,6 @@ class FollowUp(Base):
         nullable=True,
     )
 
-    # 🔁 RELACIONAMENTOS
     note = relationship(
         "Note",
         foreign_keys=[note_id],
