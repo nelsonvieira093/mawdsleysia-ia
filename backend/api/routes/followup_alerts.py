@@ -1,7 +1,7 @@
 # E:\MAWDSLEYS-AGENTE\backend\api\routes\followup_alerts.py
 
 from fastapi import APIRouter, Depends
-from backend.api.middleware import require_any_auth
+from api.middleware import require_any_auth
 from services.followup_alert_service import FollowUpAlertService
 
 router = APIRouter(

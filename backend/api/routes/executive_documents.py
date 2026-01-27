@@ -1,8 +1,17 @@
+#E:\MAWDSLEYS-AGENTE\backend\api\routes\executive_documents.py
+
 from fastapi import APIRouter, Depends
-from backend.api.middleware import require_any_auth
+
+# ✅ CORREÇÃO CRÍTICA:
+# backend NÃO é um pacote em runtime, então o import correto é direto de api
+from api.middleware import require_any_auth
+
 from services.executive_documents_service import ExecutiveDocumentsService
 
-router = APIRouter(prefix="/executive-docs", tags=["Executive Documents"])
+router = APIRouter(
+    prefix="/executive-docs",
+    tags=["Executive Documents"]
+)
 
 
 @router.get("/daily")

@@ -1,10 +1,12 @@
+# E:\MAWDSLEYS-AGENTE\backend\db\models\user_old.py
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from sqlalchemy.sql import func
 from db.base import Base
 
 class User(Base):
     __tablename__ = "users"
-
+    __table_args__ = {'extend_existing': True}  
+    
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), nullable=False)
     email = Column(String(255), unique=True, index=True, nullable=False)

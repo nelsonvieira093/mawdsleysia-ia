@@ -1,7 +1,6 @@
-#E:\MAWDSLEYS-AGENTE\backend\models\note.py
+# E:\MAWDSLEYS-AGENTE\backend\models\note.py
 from sqlalchemy import (
     Column,
-    Integer,
     Text,
     DateTime,
     ForeignKey,
@@ -13,11 +12,12 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import uuid
 
-from database.base import Base  # ⚠️ MUDAR PARA base.Base (mesmo do tag.py)
+from database.base import Base
 
 class Note(Base):
     __tablename__ = "notes"
-
+    __table_args__ = {'extend_existing': True}
+    
     id = Column(
         UUID(as_uuid=True),
         primary_key=True,
@@ -36,8 +36,9 @@ class Note(Base):
         unique=True,
     )
 
+    # ✅ CORREÇÃO CRÍTICA: Mude Integer para UUID
     user_id = Column(
-        Integer,
+        UUID(as_uuid=True),  # ❌ TROQUE Integer POR UUID
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
@@ -67,25 +68,25 @@ class Note(Base):
     # 🔁 RELACIONAMENTOS CORRIGIDOS
     note_tags = relationship(
         "NoteTag",
-        back_populates="note",  # ⚠️ DEVE CORRESPONDER ao back_populates no NoteTag
+        back_populates="note",
         cascade="all, delete-orphan",
         lazy="select",
     )
 
-    # Acesso direto às tags (OPCIONAL)
     tags = relationship(
         "Tag",
-        secondary="note_tags",  # ⚠️ Nome da tabela de associação
+        secondary="note_tags",
         primaryjoin="Note.id == NoteTag.note_id",
         secondaryjoin="NoteTag.tag_id == Tag.id",
-        viewonly=True,  # Apenas leitura
+        viewonly=True,
         lazy="select",
     )
 
+    # ✅ RELAÇÃO CORRIGIDA: Caminho completo para FollowUp
     followups = relationship(
-        "FollowUp",
+        "database.db_models.FollowUp",  # ✅ CAMINHO COMPLETO
         back_populates="note",
-        foreign_keys="FollowUp.note_id",
+        foreign_keys="database.db_models.FollowUp.note_id",
         cascade="all, delete-orphan",
         lazy="select",
     )
@@ -102,7 +103,7 @@ class Note(Base):
             "status": self.status,
             "priority": self.priority,
             "capture_id": str(self.capture_id),
-            "user_id": self.user_id,
+            "user_id": str(self.user_id),  # ✅ Convertido para string (UUID)
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
             "published_at": self.published_at.isoformat() if self.published_at else None,

@@ -1,10 +1,12 @@
-class AIService: pass
+class AIService:
+    pass
 
 
 ACTION_VERBS = [
-    "cobrar","verificar","confirmar","resolver",
-    "mandar","checar","definir","analisar"
+    "cobrar", "verificar", "confirmar", "resolver",
+    "mandar", "checar", "definir", "analisar"
 ]
+
 
 def analyze_text(text: str):
     text_l = text.lower()
@@ -33,3 +35,16 @@ def analyze_text(text: str):
         result["tags"].append("#Regulatorio")
 
     return result
+
+
+# ✅ FUNÇÃO ADICIONADA — NÃO ALTERA NADA EXISTENTE
+def load_system_prompt() -> str:
+    """
+    Prompt padrão do sistema para o agente MAWDSLEYS.
+    Mantido simples para não quebrar fluxos existentes.
+    """
+    return (
+        "Você é o assistente corporativo MAWDSLEYS. "
+        "Seja profissional, objetivo e orientado a ações, "
+        "follow-ups e organização executiva."
+    )

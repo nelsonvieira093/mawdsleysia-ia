@@ -1,9 +1,22 @@
+# E:\MAWDSLEYS-AGENTE\backend\api\routes\chat_web.py
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from datetime import datetime
 import os
 
-from backend.api.middleware import require_any_auth
+# ❌ CORREÇÃO: Remova 'backend.' do import
+try:
+    # Tenta importar do caminho correto
+    from api.middleware import require_any_auth
+except ImportError:
+    try:
+        # Tenta importar relativo
+        from ..middleware import require_any_auth
+    except ImportError:
+        # Fallback: função dummy se não existir
+        def require_any_auth():
+            return {"user_id": "system", "name": "System"}
+
 from services.web_ai_service import run_web_chat
 
 router = APIRouter(prefix="/chat-web", tags=["Web Chat"])

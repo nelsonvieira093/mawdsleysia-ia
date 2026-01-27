@@ -114,8 +114,8 @@ app.add_middleware(
 
 # 2️⃣ MIDDLEWARE DE ACTIVITY LOG
 try:
-    from core.middleware.activity_logger import ActivityLogMiddleware
-    app.add_middleware(ActivityLogMiddleware)
+    from core.middleware.activity_logger import activity_log_middleware
+    app.middleware("http")(activity_log_middleware)
     print("✅ Activity Log Middleware registrado")
 except ImportError as e:
     print(f"⚠️ Activity Log Middleware não disponível: {e}")
@@ -879,6 +879,61 @@ app.include_router(debug_router, prefix="/api/debug", tags=["Debug"])
 if ADMIN_AUTH_AVAILABLE:
     app.include_router(admin_auth_router, prefix="/api/v1/auth", tags=["Admin-Auth"])
     print("✅ Admin auth routes registradas")
+
+# =====================================================
+# CHAT PÚBLICO PARA TESTES (SEM AUTENTICAÇÃO)  <-- ✅ NOVO ENDPOINT ADICIONADO
+# =====================================================
+
+@app.post("/api/v1/chat/public")
+async def public_chat_endpoint(data: dict):
+    """Chat público para testes - sem autenticação necessária"""
+    message = data.get("message", "")
+    
+    try:
+        client = get_openai_client()
+        
+        if client:
+            # Usa SDK novo OpenAI
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "Você é o assistente corporativo MAWDSLEYS. Responda de forma profissional e útil."},
+                    {"role": "user", "content": message}
+                ],
+                temperature=0.4,
+                max_tokens=500
+            )
+            reply = response.choices[0].message.content
+        else:
+            # Fallback se OpenAI não estiver disponível
+            reply = f"🤖 MAWDSLEYS (modo fallback): '{message}'"
+            
+    except Exception as e:
+        # Fallback amigável
+        print(f"⚠️ Erro no chat público: {e}")
+        if "oi" in message.lower() or "olá" in message.lower():
+            reply = "👋 Olá! Eu sou o Agente MAWDSLEYS."
+        else:
+            reply = f"🤖 MAWDSLEYS: Recebi sua mensagem: '{message}'"
+    
+    return {
+        "reply": reply,
+        "status": "success",
+        "openai_used": client is not None if 'client' in locals() else False,
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
+@app.get("/api/v1/chat/public/health")
+async def public_chat_health():
+    """Health check para chat público"""
+    client = get_openai_client()
+    return {
+        "status": "healthy" if client else "fallback",
+        "endpoint": "/api/v1/chat/public",
+        "openai_available": client is not None,
+        "auth_required": False,
+        "timestamp": datetime.utcnow().isoformat()
+    }
 
 # =====================================================
 # CHAT API PARA PRODUÇÃO (SDK NOVO OPENAI)

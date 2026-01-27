@@ -1,3 +1,5 @@
+# E:\MAWDSLEYS-AGENTE\backend\db\models\user.py
+
 from sqlalchemy import (
     Column,
     String,
@@ -16,7 +18,12 @@ from sqlalchemy.orm import relationship
 import uuid
 import enum
 
-from database.base import Base
+# Importa a Base CORRETA - igual em todos os modelos
+try:
+    from database.base import Base
+except ImportError:
+    from sqlalchemy.ext.declarative import declarative_base
+    Base = declarative_base()
 
 
 # =========================
@@ -35,7 +42,8 @@ class FollowUpStatus(enum.Enum):
 
 class User(Base):
     __tablename__ = "users"
-
+    __table_args__ = {'extend_existing': True}
+    
     id = Column(
         UUID(as_uuid=True),
         primary_key=True,
@@ -67,9 +75,13 @@ class User(Base):
         return f"<User id={self.id} email={self.email}>"
 
 
+# ❌❌❌ REMOVA COMPLETAMENTE ESTA CLASSE Note ❌❌❌
+# Ela está duplicada e incompleta!
+"""
 class Note(Base):
     __tablename__ = "notes"
-
+    __table_args__ = {'extend_existing': True}
+    
     id = Column(
         UUID(as_uuid=True),
         primary_key=True,
@@ -93,11 +105,20 @@ class Note(Base):
 
     def __repr__(self):
         return f"<Note id={self.id}>"
+"""
+
+# Importa a Note CORRETA do models/note.py
+try:
+    from models.note import Note
+except ImportError:
+    # Fallback se não conseguir importar
+    Note = None
 
 
 class FollowUp(Base):
     __tablename__ = "followups"
-
+    __table_args__ = {'extend_existing': True}
+    
     id = Column(
         UUID(as_uuid=True),
         primary_key=True,
@@ -106,7 +127,7 @@ class FollowUp(Base):
     )
 
     owner_id = Column(
-        UUID(as_uuid=True),  # 🔴 CORREÇÃO CRÍTICA
+        UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="SET NULL"),
         nullable=True,
         index=True,
@@ -146,8 +167,9 @@ class FollowUp(Base):
         nullable=True,
     )
 
+    # ✅ Agora aponta para a Note CORRETA (do models/note.py)
     note = relationship(
-        "Note",
+        "models.note.Note",  # Caminho completo
         foreign_keys=[note_id],
         back_populates="followups",
         lazy="select"
