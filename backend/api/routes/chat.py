@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -43,6 +43,8 @@ router = APIRouter(prefix="/api/v1/chat", tags=["Chat MAWDSLEYS"])
 
 class ChatRequest(BaseModel):
     message: str
+    context: Optional[Dict[str, Any]] = None
+    mode: Optional[str] = None
 
 class ChatResponse(BaseModel):
     reply: str
@@ -72,6 +74,36 @@ def _resolve_user_field(model):
             return getattr(model, candidate)
     raise RuntimeError(f"Model {model.__name__} não possui campo de usuário conhecido")
 
+def _format_external_context(ctx: Dict[str, Any]) -> str:
+    if not ctx or not isinstance(ctx, dict):
+        return ""
+
+    parts = []
+
+    try:
+        if ctx.get("followups"):
+            parts.append("FOLLOW-UPS (frontend):")
+            for f in ctx["followups"]:
+                parts.append(f"- {str(f)}")
+
+        if ctx.get("notes"):
+            parts.append("NOTAS (frontend):")
+            for n in ctx["notes"]:
+                parts.append(f"- {str(n)}")
+
+        if ctx.get("meetings"):
+            parts.append("REUNIÕES (frontend):")
+            for m in ctx["meetings"]:
+                parts.append(f"- {str(m)}")
+
+        if ctx.get("kpis"):
+            parts.append("KPIs (frontend):")
+            parts.append(str(ctx["kpis"]))
+    except Exception:
+        return ""
+
+    return "\n".join(parts)
+
 # =========================
 # CHAT
 # =========================
@@ -91,7 +123,7 @@ async def chat(
     repo = ActivityLogRepository(db)
 
     # =========================
-    # FOLLOW-UPS
+    # FOLLOW-UPS (BANCO)
     # =========================
 
     user_field = _resolve_user_field(FollowUp)
@@ -116,8 +148,6 @@ async def chat(
 
     kpi_repo = KPIRepository(db)
     kpi_followup = kpi_repo.followup_summary(user_id)
-    kpi_perf = kpi_repo.followup_performance(user_id)
-    kpi_agenda = kpi_repo.agenda_kpis(user_id)
 
     # =========================
     # REUNIÕES
@@ -166,12 +196,33 @@ async def chat(
         pass
 
     # =========================
-    # PROMPT
+    # CONTEXTO EXTERNO
     # =========================
 
-    system_prompt = f"""
-Você é o Agente Executivo MAWDSLEYS.
+    external_ctx = _format_external_context(data.context)
 
+    # =========================
+    # PROMPT (PASSO C)
+    # =========================
+
+    if data.mode == "bullet_journal_ceo":
+        system_prompt = f"""
+Você está registrando um **Bullet Journal Executivo (CEO)**.
+
+⚠️ REGRA ABSOLUTA:
+Responda **APENAS em JSON válido**, sem texto fora do JSON.
+
+FORMATO OBRIGATÓRIO:
+{{
+  "summary": "síntese executiva",
+  "alerts": ["alertas relevantes"],
+  "followups": ["follow-ups citados"],
+  "actions": ["ações práticas"],
+  "decisions": ["decisões estratégicas"],
+  "tags": ["execução", "estratégia"]
+}}
+
+DADOS REAIS:
 FOLLOW-UPS:
 {chr(10).join(followups_ctx) or "Nenhum follow-up ativo."}
 
@@ -188,11 +239,37 @@ NOTAS:
 MEMÓRIA:
 {memory_ctx or "Sem memória recente."}
 
+{external_ctx}
+
+Usuário: {user_name}
+"""
+    else:
+        system_prompt = f"""
+Você é o Agente Executivo MAWDSLEYS.
+
+FOLLOW-UPS (banco):
+{chr(10).join(followups_ctx) or "Nenhum follow-up ativo."}
+
+KPIs:
+- Abertos: {kpi_followup.get("open")}
+- Atrasados: {kpi_followup.get("overdue")}
+
+REUNIÕES:
+{chr(10).join(meetings_ctx) or "Nenhuma reunião."}
+
+NOTAS:
+{chr(10).join(notes_ctx) or "Nenhuma nota."}
+
+MEMÓRIA:
+{memory_ctx or "Sem memória recente."}
+
+{external_ctx}
+
 Usuário: {user_name}
 """
 
     # =========================
-    # OPENAI (ESTÁVEL)
+    # OPENAI
     # =========================
 
     reply = "⚠️ IA indisponível no momento, mas seus dados estão carregados."
@@ -212,7 +289,7 @@ Usuário: {user_name}
             pass
 
     # =========================
-    # LOG (NÃO QUEBRA CHAT)
+    # LOG
     # =========================
 
     try:
@@ -222,7 +299,7 @@ Usuário: {user_name}
                 entity="chat",
                 entity_id=f"chat_{datetime.utcnow().timestamp()}",
                 actor=user_name,
-                payload={"question": data.message[:300]},
+                payload={"question": data.message[:300], "mode": data.mode},
             )
         )
     except Exception:

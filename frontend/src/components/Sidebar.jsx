@@ -69,6 +69,9 @@ export default function Sidebar() {
             })}
           </div>
         ))}
+        <li>
+          <Link to="/executive-journals">📘 Histórico CEO</Link>
+        </li>
 
         <div className="sidebar-integrations">
           <WhatsAppButton label="WhatsApp" small={false} />

@@ -12,6 +12,9 @@ from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from api.routes import chat_web
 import openai
+from api.routes.executive_journals import router as executive_journals_router
+
+
 
 # =====================================================
 # INICIALIZAÇÃO SEGURA DO CLIENT OPENAI
@@ -93,6 +96,7 @@ async def health_lite():
         "timestamp": datetime.utcnow().isoformat(),
         "openai_status": "online" if client else "fallback"
     }
+
 
 # =====================================================
 # MIDDLEWARES (ORDEM CRÍTICA)
@@ -837,6 +841,11 @@ app.include_router(chat_web.router)
 app.include_router(executive_documents.router)
 app.include_router(executive_dashboard.router)
 app.include_router(followup_alerts.router)
+
+# Rotas de diários executivos
+app.include_router(executive_journals_router)
+
+
 
 async def health_lite_endpoint():
     return await health_lite()

@@ -47,7 +47,7 @@ export default function Chat() {
 
   const checkAIStatus = async () => {
     try {
-      await api.get("/health"); // ✅ endpoint correto
+      await api.get("/health");
       setAiStatus("online");
     } catch {
       setAiStatus("offline");
@@ -60,6 +60,7 @@ export default function Chat() {
       setAiContext(context);
     } catch (err) {
       console.error("Erro ao carregar contexto IA:", err);
+      setAiContext(null);
     }
   };
 
@@ -77,7 +78,7 @@ export default function Chat() {
     });
 
   // =============================
-  // ENVIO DE MENSAGEM (CHAT / EXECUTIVO)
+  // ENVIO DE MENSAGEM
   // =============================
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isTyping || !user?.id) return;
@@ -95,74 +96,83 @@ export default function Chat() {
     setInputMessage("");
     setIsTyping(true);
 
+    const safeContext = aiContext || {};
+
     try {
-      let response;
+      const response = await api.post("/api/v1/chat/", {
+        message: messageToSend,
+        context: safeContext,
+        mode: mode === "executive" ? "bullet_journal_ceo" : undefined,
+      });
+
+      const replyText =
+        response.data.reply ||
+        response.data.response ||
+        response.data.message ||
+        "";
 
       // =============================
       // 📘 BULLET JOURNAL (CEO)
       // =============================
       if (mode === "executive") {
-        response = await api.post("/api/v1/chat/", {
-          message: messageToSend,
-          mode: "bullet_journal_ceo",
-        });
+        let parsedData;
 
-        const replyText =
-          response.data.reply ||
-          response.data.response ||
-          response.data.message ||
-          "Resposta recebida";
+        try {
+          parsedData = JSON.parse(replyText);
+        } catch {
+          parsedData = {
+            summary: "Erro ao interpretar resposta executiva",
+            alerts: [],
+            followups: [],
+            actions: [],
+            decisions: [],
+            tags: ["erro"],
+          };
+        }
 
-        const executiveMessage = {
-          id: Date.now() + 1,
-          role: "assistant",
-          type: "chat",
-          content: replyText,
-          timestamp: new Date().toISOString(),
-        };
-
-        setMessages((prev) => [...prev, executiveMessage]);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: Date.now() + 1,
+            role: "assistant",
+            type: "executive",
+            data: parsedData,
+            timestamp: new Date().toISOString(),
+          },
+        ]);
       }
 
       // =============================
       // 💬 CHAT NORMAL
       // =============================
       else {
-        response = await api.post("/api/v1/chat/", {
-          message: messageToSend,
-        });
-
-        const replyText =
-          response.data.reply ||
-          response.data.response ||
-          response.data.message ||
-          "Resposta recebida";
-
-        const aiMessage = {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: Date.now() + 1,
+            role: "assistant",
+            type: "chat",
+            content: replyText,
+            timestamp: new Date().toISOString(),
+          },
+        ]);
+      }
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        {
           id: Date.now() + 1,
           role: "assistant",
           type: "chat",
-          content: replyText,
+          content:
+            aiStatus === "offline"
+              ? "🔌 **IA Offline**\n\nO backend está indisponível."
+              : `⚠️ **Erro técnico**\n\n${
+                  err.response?.data?.detail || err.message
+                }`,
           timestamp: new Date().toISOString(),
-        };
-
-        setMessages((prev) => [...prev, aiMessage]);
-      }
-    } catch (err) {
-      const errorMessage = {
-        id: Date.now() + 1,
-        role: "assistant",
-        type: "chat",
-        content:
-          aiStatus === "offline"
-            ? "🔌 **IA Offline**\n\nO backend está indisponível."
-            : `⚠️ **Erro técnico**\n\n${
-                err.response?.data?.detail || err.message
-              }`,
-        timestamp: new Date().toISOString(),
-      };
-
-      setMessages((prev) => [...prev, errorMessage]);
+        },
+      ]);
     } finally {
       setIsTyping(false);
     }
@@ -242,9 +252,13 @@ export default function Chat() {
                 </div>
 
                 <div className="message-text">
-                  {message.content.split("\n").map((line, i) => (
-                    <div key={i}>{line}</div>
-                  ))}
+                  {message.type === "executive" ? (
+                    <ExecutiveBlock data={message.data} />
+                  ) : (
+                    message.content
+                      .split("\n")
+                      .map((line, i) => <div key={i}>{line}</div>)
+                  )}
                 </div>
               </div>
             </div>

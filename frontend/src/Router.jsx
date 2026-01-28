@@ -65,7 +65,7 @@ export default function RouterApp() {
                   <Route path="/history" element={<History />} />
                   <Route path="/kb" element={<KnowledgeBase />} />
                   <Route path="/whatsapp" element={<WhatsApp />} />
-
+                  <Route path="/executive-journals" element={<ExecutiveJournalHistory />} />
                   {/* 🔥 FOLLOWUPS */}
                   <Route path="/followups" element={<Followups />} />
                   <Route path="/followups/:id" element={<FollowupDetail />} />
