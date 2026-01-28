@@ -9,7 +9,7 @@ import axios from "axios";
 // 🔒 Blindado: NUNCA usa localhost em produção
 export const baseURL =
   import.meta.env.VITE_API_URL ||
-  (import.meta.env.MODE === "development" ? "http://localhost:8000" : "");
+  (import.meta.env.MODE === "development" ? "http://localhost:8080" : "");
 
 // Instância única do Axios
 const api = axios.create({

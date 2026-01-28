@@ -1,5 +1,3 @@
-# backend/api/routes/chat.py
-
 import os
 from datetime import datetime
 from typing import Optional
@@ -24,18 +22,18 @@ from models.meeting import Meeting
 from models.note import Note
 from database.db_models import FollowUp
 
-# 🔹 OpenAI SDK NOVO
-from openai import OpenAI
+# 🔹 OPENAI SDK ESTÁVEL (PRODUÇÃO)
+import openai
 
 # =========================
 # CONFIG
 # =========================
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    raise RuntimeError("OPENAI_API_KEY não configurada")
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+# ⚠️ NÃO derruba a aplicação se a chave faltar
+if OPENAI_API_KEY:
+    openai.api_key = OPENAI_API_KEY
 
 router = APIRouter(prefix="/api/v1/chat", tags=["Chat MAWDSLEYS"])
 
@@ -59,7 +57,7 @@ def chat_health():
     return {
         "status": "online",
         "service": "MAWDSLEYS Chat",
-        "openai": "enabled",
+        "openai_configured": bool(OPENAI_API_KEY),
         "timestamp": datetime.utcnow().isoformat(),
     }
 
@@ -178,8 +176,8 @@ FOLLOW-UPS:
 {chr(10).join(followups_ctx) or "Nenhum follow-up ativo."}
 
 KPIs:
-- Abertos: {kpi_followup["open"]}
-- Atrasados: {kpi_followup["overdue"]}
+- Abertos: {kpi_followup.get("open")}
+- Atrasados: {kpi_followup.get("overdue")}
 
 REUNIÕES:
 {chr(10).join(meetings_ctx) or "Nenhuma reunião."}
@@ -194,21 +192,24 @@ Usuário: {user_name}
 """
 
     # =========================
-    # OPENAI
+    # OPENAI (ESTÁVEL)
     # =========================
 
-    try:
-        completion = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": data.message},
-            ],
-            temperature=0.3,
-        )
-        reply = completion.choices[0].message.content
-    except Exception:
-        reply = "⚠️ IA indisponível no momento, mas seus dados estão carregados."
+    reply = "⚠️ IA indisponível no momento, mas seus dados estão carregados."
+
+    if OPENAI_API_KEY:
+        try:
+            completion = openai.ChatCompletion.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": data.message},
+                ],
+                temperature=0.3,
+            )
+            reply = completion.choices[0].message["content"]
+        except Exception:
+            pass
 
     # =========================
     # LOG (NÃO QUEBRA CHAT)
