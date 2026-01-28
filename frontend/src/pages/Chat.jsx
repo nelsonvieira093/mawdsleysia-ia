@@ -29,7 +29,7 @@ export default function Chat() {
   const [aiContext, setAiContext] = useState(null);
   const messagesEndRef = useRef(null);
 
-  // 🔥 NOVO: modo de operação
+  // 🔥 modo de operação
   const [mode, setMode] = useState("chat"); // chat | executive
 
   // =============================
@@ -47,7 +47,7 @@ export default function Chat() {
 
   const checkAIStatus = async () => {
     try {
-      await api.get("/openapi.json");
+      await api.get("/health"); // ✅ endpoint correto
       setAiStatus("online");
     } catch {
       setAiStatus("offline");
@@ -98,26 +98,35 @@ export default function Chat() {
     try {
       let response;
 
-      // 🔥 MODO EXECUTIVO (Bullet Journal)
+      // =============================
+      // 📘 BULLET JOURNAL (CEO)
+      // =============================
       if (mode === "executive") {
-        response = await api.post("/ceo/capture", {
-          input: messageToSend,
+        response = await api.post("/api/v1/chat/", {
+          message: messageToSend,
+          mode: "bullet_journal_ceo",
         });
 
-        const data = response.data;
+        const replyText =
+          response.data.reply ||
+          response.data.response ||
+          response.data.message ||
+          "Resposta recebida";
 
         const executiveMessage = {
           id: Date.now() + 1,
           role: "assistant",
-          type: "executive",
+          type: "chat",
+          content: replyText,
           timestamp: new Date().toISOString(),
-          data, // JSON estruturado vindo da IA
         };
 
         setMessages((prev) => [...prev, executiveMessage]);
       }
 
-      // 🔹 MODO CHAT NORMAL
+      // =============================
+      // 💬 CHAT NORMAL
+      // =============================
       else {
         response = await api.post("/api/v1/chat/", {
           message: messageToSend,
@@ -147,7 +156,9 @@ export default function Chat() {
         content:
           aiStatus === "offline"
             ? "🔌 **IA Offline**\n\nO backend está indisponível."
-            : `⚠️ **Erro técnico**\n\n${err.response?.data?.detail || err.message}`,
+            : `⚠️ **Erro técnico**\n\n${
+                err.response?.data?.detail || err.message
+              }`,
         timestamp: new Date().toISOString(),
       };
 
@@ -175,48 +186,6 @@ export default function Chat() {
         timestamp: new Date().toISOString(),
       },
     ]);
-  };
-
-  // =============================
-  // RENDER BLOCO EXECUTIVO
-  // =============================
-  const renderExecutiveBlock = (data) => {
-    if (!data) return null;
-
-    return (
-      <div className="executive-block">
-        <div className="exec-tags">
-          {data.hashtags?.map((tag) => (
-            <span key={tag} className="exec-tag">
-              #{tag}
-            </span>
-          ))}
-        </div>
-
-        <h4>🧠 Resumo Estruturado</h4>
-
-        <ul>
-          <li>
-            <b>Síntese:</b> {data.summary}
-          </li>
-          <li>
-            <b>Follow-ups:</b> {data.followups?.join(", ")}
-          </li>
-          <li>
-            <b>Ritos:</b> {data.rituals?.join(", ")}
-          </li>
-          <li>
-            <b>Diretorias:</b> {data.directors?.join(", ")}
-          </li>
-          <li>
-            <b>Ações:</b> {data.actions?.join(", ")}
-          </li>
-          <li>
-            <b>Registro:</b> {data.register_location}
-          </li>
-        </ul>
-      </div>
-    );
   };
 
   // =============================
@@ -273,13 +242,9 @@ export default function Chat() {
                 </div>
 
                 <div className="message-text">
-                  {message.type === "executive" ? (
-                    <ExecutiveBlock data={message.data} />
-                  ) : (
-                    message.content
-                      .split("\n")
-                      .map((line, i) => <div key={i}>{line}</div>)
-                  )}
+                  {message.content.split("\n").map((line, i) => (
+                    <div key={i}>{line}</div>
+                  ))}
                 </div>
               </div>
             </div>
