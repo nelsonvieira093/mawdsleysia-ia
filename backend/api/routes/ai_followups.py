@@ -6,12 +6,14 @@ from typing import Optional
 import os
 from datetime import datetime
 
-from ...middleware.auth import require_any_auth
-
 # 🔹 EVENTOS / MEMÓRIA
 from core.events.activity_log import ActivityEvent
 from db.repositories.activity_log_repository import ActivityLogRepository
-from db.session import get_db  # usa sua session padrão
+
+from api.routes.auth import require_any_auth
+
+  # confirme se esse caminho existe
+from database.session import get_db  # ou models.session
 
 router = APIRouter(prefix="/ai/followups", tags=["AI FollowUps"])
 
@@ -76,7 +78,8 @@ Equipe MAWDSLEYS
             except ImportError:
                 import openai
 
-                client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+                openai.api_key = os.getenv("OPENAI_API_KEY")
 
                 system_prompt = f"""
 Você é um assistente que gera follow-ups profissionais.
@@ -89,7 +92,7 @@ Tarefa: {data.task}
 Responsável: {data.responsible}
 """
 
-                completion = client.chat.completions.create(
+                completion = openai.ChatCompletion.create(  # ✅ CORRIGIDO
                     model="gpt-4o-mini",
                     messages=[
                         {"role": "system", "content": system_prompt},

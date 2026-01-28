@@ -70,9 +70,9 @@ async def ask_ceo(
 
         except ImportError:
             import openai
-            client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+            openai.api_key = os.getenv("OPENAI_API_KEY")
 
-            response = client.chat.completions.create(
+            response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {

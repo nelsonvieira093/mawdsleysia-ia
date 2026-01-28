@@ -11,7 +11,7 @@ from datetime import datetime
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from api.routes import chat_web
-from openai import OpenAI
+import openai
 
 # =====================================================
 # INICIALIZAÇÃO SEGURA DO CLIENT OPENAI
@@ -33,15 +33,15 @@ def get_openai_client():
             print("⚠️ OPENAI_API_KEY não encontrada — IA em modo fallback")
             return None
         
-        # Inicializa cliente com SDK novo
-        client = OpenAI(api_key=api_key)
+        # ✅ CORRIGIDO: Configura a API key diretamente no módulo
+        openai.api_key = api_key
         
         # ✅ REMOVIDA A CHAMADA DE TESTE QUE CAUSAVA ERRO NO STARTUP
         # Agora só cria o cliente, sem chamadas de rede
         
-        OPENAI_CLIENT = client
+        OPENAI_CLIENT = openai  # ✅ CORRIGIDO: Retorna o módulo openai configurado
         print("✅ OpenAI client inicializado sob demanda")
-        return client
+        return openai  # ✅ CORRIGIDO: Retorna o módulo configurado
             
     except Exception as e:
         print(f"⚠️ Erro ao inicializar OpenAI: {e}")
@@ -893,8 +893,8 @@ async def public_chat_endpoint(data: dict):
         client = get_openai_client()
         
         if client:
-            # Usa SDK novo OpenAI
-            response = client.chat.completions.create(
+            # ✅ CORRIGIDO: Usa SDK antigo (0.28.1) - openai.ChatCompletion.create
+            response = openai.ChatCompletion.create(
                 model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": "Você é o assistente corporativo MAWDSLEYS. Responda de forma profissional e útil."},
@@ -948,8 +948,8 @@ async def production_chat_endpoint(data: dict):
         client = get_openai_client()  # ✅ AGORA CHAMANDO A FUNÇÃO SOB DEMANDA
         
         if client:
-            # Usa SDK novo OpenAI
-            response = client.chat.completions.create(
+            # ✅ CORRIGIDO: Usa SDK antigo (0.28.1) - openai.ChatCompletion.create
+            response = openai.ChatCompletion.create(
                 model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": "Você é o assistente corporativo MAWDSLEYS. Responda de forma profissional."},
@@ -1015,8 +1015,8 @@ async def chat_handler_legacy(data: ChatRequestLegacy):
         client = get_openai_client()  # ✅ Chamada sob demanda
         
         if client:
-            # Usa SDK novo
-            response = client.chat.completions.create(
+            # ✅ CORRIGIDO: Usa SDK antigo (0.28.1) - openai.ChatCompletion.create
+            response = openai.ChatCompletion.create(
                 model=data.model,
                 messages=[
                     {"role": "system", "content": "Você é o assistente corporativo MAWDSLEYS. Responda de forma profissional e útil."},
@@ -1082,7 +1082,7 @@ print(f"   • /meetings/ - Frontend compatibility")
 print(f"   • /kpis/overview - Frontend compatibility")
 print(f"   • /knowledge/items - Frontend compatibility")
 print(f"   • /knowledge/stats - Frontend compatibility")
-print(f"🔧 OpenAI Status: {'✅ ONLINE' if client else '⚠️ FALLBACK'}")
+print(f"🔧 OpenAI Status: {'✅ ONLINE' if openai.api_key else '⚠️ FALLBACK'}")  # ✅ CORRIGIDO: client → openai.api_key
 
 # =====================================================
 # RUN

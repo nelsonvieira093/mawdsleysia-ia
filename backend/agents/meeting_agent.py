@@ -1,10 +1,10 @@
 class MeetingAgent: pass
 
 import os
-from openai import OpenAI
+import openai
 from ai_engine.embeddings.embedding_loader import search_relevant
 
-client = OpenAI()
+openai.api_key = os.getenv("OPENAI_API_KEY")
 def summarize_meeting(notes: str):
     docs = search_relevant(notes)
     context = "\n".join([d["content"] for d in docs])
@@ -25,7 +25,7 @@ Contexto relevante:
 
     user_prompt = f"Notas da reunião:\n{notes}"
 
-    response = client.chat.completions.create(
+    response = openai.ChatCompletion.create(
         model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": system_prompt},

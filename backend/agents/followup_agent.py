@@ -1,9 +1,8 @@
-
 # E:\MAWDSLEYS-AGENTE\backend\agents\followup_agent.py
 
 from datetime import datetime
 from sqlalchemy.orm import Session
-from openai import OpenAI
+import openai  # ✅ CORRIGIDO
 
 from core.memory.memory_engine import MemoryEngine
 from core.events.activity_log import ActivityEvent
@@ -17,7 +16,6 @@ from schemas.followup import FollowUpOut, FollowUpStatus
 class FollowUpAgent:
     def __init__(self, db: Session):
         self.db = db
-        self.client = OpenAI()
         self.memory = MemoryEngine(db)
         self.repo = ActivityLogRepository(db)
 
@@ -60,7 +58,7 @@ Tarefa: {task}
 Responsável: {responsible}
 """
 
-        completion = self.client.chat.completions.create(
+        completion = openai.ChatCompletion.create(  # ✅ CORRIGIDO
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": system_prompt},

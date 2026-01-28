@@ -1,9 +1,9 @@
+# E:\MAWDSLEYS-AGENTE\backend\services\web_ai_service.py
 import os
-from openai import OpenAI
+import openai  # ✅ CORRIGIDO
 from services.ai_service import load_system_prompt
 from pathlib import Path
 
-client = OpenAI()
 
 WEB_PROMPT_PATH = (
     Path(__file__).resolve()
@@ -24,7 +24,7 @@ def run_web_chat(question: str) -> str:
         {"role": "user", "content": question}
     ]
 
-    response = client.chat.completions.create(
+    response = openai.ChatCompletion.create(  # ✅ CORRIGIDO
         model="gpt-4.1",
         messages=messages,
         temperature=0.3

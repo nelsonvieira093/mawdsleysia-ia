@@ -1,11 +1,11 @@
 import os
-from openai import OpenAI
+import openai
 from ai_engine.embeddings.embedding_loader import search_relevant
 
 
 class KPIAgent: pass
 
-client = OpenAI()
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def analyze_kpi(text: str):
     docs = search_relevant(text)
@@ -24,7 +24,7 @@ Contexto relevante:
 {context}
 """
 
-    response = client.chat.completions.create(
+    response = openai.ChatCompletion.create(
         model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": system_prompt},

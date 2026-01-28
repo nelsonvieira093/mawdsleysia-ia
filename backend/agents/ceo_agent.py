@@ -1,11 +1,10 @@
-#E:\MAWDSLEYS-AGENTE\backend\agents\ceo_agent.py
-from openai import OpenAI
+# E:\MAWDSLEYS-AGENTE\backend\agents\ceo_agent.py
+import openai  # ✅ CORRIGIDO
 
 from services.ai_service import load_system_prompt
 from core.memory.executive_memory_service import ExecutiveMemoryService
 from services.json_guard import JSONGuard
 
-client = OpenAI()
 
 
 class CEOAgent:
@@ -49,7 +48,7 @@ class CEOAgent:
         ]
 
         # 4️⃣ Chamada ao modelo
-        response = client.chat.completions.create(
+        response = openai.ChatCompletion.create(  # ✅ CORRIGIDO
             model="gpt-4.1",
             messages=messages,
             temperature=0.1
