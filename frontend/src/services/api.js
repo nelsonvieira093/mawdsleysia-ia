@@ -33,7 +33,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // 🚪 Trata erro 401 global (sessão expirada)
@@ -46,7 +46,7 @@ api.interceptors.response.use(
       window.location.href = "/login";
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 // =====================================================
@@ -108,7 +108,7 @@ export const checkWeeklyMeetings = async () => {
 
   const response = await api.post(
     "/api/v1/automations/check-weekly-meetings",
-    {}
+    {},
   );
   return response.data;
 };
@@ -193,13 +193,13 @@ export const smartSearch = async (query) => {
   const normalize = (res) => (res.status === "fulfilled" ? res.value.data : []);
 
   const f = normalize(followups).filter((i) =>
-    JSON.stringify(i).toLowerCase().includes(query.toLowerCase())
+    JSON.stringify(i).toLowerCase().includes(query.toLowerCase()),
   );
   const n = normalize(notes).filter((i) =>
-    JSON.stringify(i).toLowerCase().includes(query.toLowerCase())
+    JSON.stringify(i).toLowerCase().includes(query.toLowerCase()),
   );
   const m = normalize(meetings).filter((i) =>
-    JSON.stringify(i).toLowerCase().includes(query.toLowerCase())
+    JSON.stringify(i).toLowerCase().includes(query.toLowerCase()),
   );
 
   return {
@@ -223,28 +223,34 @@ export const createFollowupViaAI = async (data) => {
   };
 };
 
-// Bullet Journal Executivo
+// =====================================================
+// BULLET JOURNAL EXECUTIVO (CORRIGIDO)
+// =====================================================
+
+// 📘 Bullet Journal é apenas um MODO do chat.
+// Usa o MESMO endpoint /api/v1/chat com contexto executivo.
 export async function captureExecutive(input) {
-  const response = await api.post("/ceo/capture", {
-    input
+  const response = await api.post("/api/v1/chat/", {
+    message: input,
+    mode: "bullet_journal_ceo",
+    timestamp: new Date().toISOString(),
   });
-  return response.data;
+
+  return {
+    success: true,
+    response:
+      response.data.reply || response.data.response || response.data.message,
+    raw: response.data,
+  };
 }
 
-// Documentos automáticos
-export async function getDailyLog() {
-  return (await api.get("/executive-docs/daily")).data;
-}
-
-export async function getWeeklyDigest() {
-  return (await api.get("/executive-docs/weekly")).data;
-}
-
-export async function getBoardReport() {
-  return (await api.get("/executive-docs/board")).data;
-}
-
-
+// ❌ Removidos endpoints inexistentes:
+// - /ceo/capture
+// - /executive-docs/daily
+// - /executive-docs/weekly
+// - /executive-docs/board
+//
+// Esses só devem existir quando houver backend dedicado.
 
 // =====================================================
 // EXPORT DEFAULT
