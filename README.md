@@ -256,3 +256,10 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8080
 
 ative o virtualenv
 source venv/Scripts/activate
+
+flyctl version
+Quando logar com sucesso, rode na pasta do backend:
+
+flyctl deploy
+
+flyctl auth login

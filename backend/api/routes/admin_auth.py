@@ -41,7 +41,7 @@ ADMIN_USERS = [
         # hash de "Daniela@123"
         "password": "$2b$12$M4nZ4CwX3Xk9z2Kp5MZ1wO3s9z4F7XH2G8A2Z3ZxF7Yw1mJQ6L8a2",
         "is_admin": True,
-        "role": "admin",
+        "role": "super_admin",
     },
 ]
 
