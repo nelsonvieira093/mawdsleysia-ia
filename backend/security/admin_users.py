@@ -15,6 +15,6 @@ ADMIN_USERS = [
         "email": "danielac@mbbpharma.com.br",
         "password": "Daniela@123",
         "is_admin": True,
-        "role": "admin"
+        "role": "super_admin"
     }
 ]
