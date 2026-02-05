@@ -2,9 +2,7 @@
 
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
-
 import Sidebar from "./components/Sidebar";
-
 import Dashboard from "./pages/Dashboard";
 import Chat from "./pages/Chat";
 import Agent from "./pages/Agent";
@@ -22,6 +20,9 @@ import FollowupEdit from "./pages/FollowupEdit";
 
 // 🔥 KPIs
 import Kpis from "./pages/Kpis";
+
+// 📘 BULLET JOURNAL – HISTÓRICO
+import ExecutiveJournalHistory from "./pages/ExecutiveJournalHistory";
 
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -65,7 +66,13 @@ export default function RouterApp() {
                   <Route path="/history" element={<History />} />
                   <Route path="/kb" element={<KnowledgeBase />} />
                   <Route path="/whatsapp" element={<WhatsApp />} />
-                  <Route path="/executive-journals" element={<ExecutiveJournalHistory />} />
+
+                  {/* 📘 BULLET JOURNAL */}
+                  <Route
+                    path="/executive-journals"
+                    element={<ExecutiveJournalHistory />}
+                  />
+
                   {/* 🔥 FOLLOWUPS */}
                   <Route path="/followups" element={<Followups />} />
                   <Route path="/followups/:id" element={<FollowupDetail />} />

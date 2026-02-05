@@ -175,7 +175,7 @@ class FollowUp(Base):
         lazy="select"
     )
 
-    owner = relationship("User", foreign_keys=[owner_id])
+    owner = relationship("database.db_models.User", foreign_keys=[owner_id])
 
     def __repr__(self):
         return f"<FollowUp(id={self.id}, status={self.status.value})>"

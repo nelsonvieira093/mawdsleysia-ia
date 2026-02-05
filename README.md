@@ -249,3 +249,10 @@ vercel login
 Deploy:
 
 vercel --prod
+
+uvicorn app.main:app --reload
+
+uvicorn main:app --reload --host 0.0.0.0 --port 8080
+
+ative o virtualenv
+source venv/Scripts/activate

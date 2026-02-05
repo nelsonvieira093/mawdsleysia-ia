@@ -159,7 +159,7 @@ export const refreshAIContext = async () => {
 
 export const chatWithAI = async (message) => {
   try {
-    const response = await api.post("/api/v1/chat/", {
+    const response = await api.post("/api/v1/chat", {
       message,
       timestamp: new Date().toISOString(),
     });
@@ -224,13 +224,12 @@ export const createFollowupViaAI = async (data) => {
 };
 
 // =====================================================
-// BULLET JOURNAL EXECUTIVO (CORRIGIDO)
+// BULLET JOURNAL EXECUTIVO
 // =====================================================
 
 // 📘 Bullet Journal é apenas um MODO do chat.
-// Usa o MESMO endpoint /api/v1/chat com contexto executivo.
 export async function captureExecutive(input) {
-  const response = await api.post("/api/v1/chat/", {
+  const response = await api.post("/api/v1/chat", {
     message: input,
     mode: "bullet_journal_ceo",
     timestamp: new Date().toISOString(),
@@ -244,13 +243,14 @@ export async function captureExecutive(input) {
   };
 }
 
-// ❌ Removidos endpoints inexistentes:
-// - /ceo/capture
-// - /executive-docs/daily
-// - /executive-docs/weekly
-// - /executive-docs/board
-//
-// Esses só devem existir quando houver backend dedicado.
+// =====================================================
+// 📘 HISTÓRICO DO BULLET JOURNAL (⬅️ CORREÇÃO DO ERRO)
+// =====================================================
+
+export const getExecutiveJournals = async () => {
+  const response = await api.get("/api/executive-journals");
+  return response.data;
+};
 
 // =====================================================
 // EXPORT DEFAULT

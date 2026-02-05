@@ -1,4 +1,4 @@
-# E:\MAWDSLEYS-AGENTE\backend\main.py
+# E:\MAWDSLEYS-AGENTE\backend\main.py - VERSÃO CORRIGIDA
 
 from fastapi import FastAPI, APIRouter, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,11 +10,8 @@ from pathlib import Path
 from datetime import datetime
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
-from api.routes import chat_web
 import openai
 from api.routes.executive_journals import router as executive_journals_router
-
-
 
 # =====================================================
 # INICIALIZAÇÃO SEGURA DO CLIENT OPENAI
@@ -96,7 +93,6 @@ async def health_lite():
         "timestamp": datetime.utcnow().isoformat(),
         "openai_status": "online" if client else "fallback"
     }
-
 
 # =====================================================
 # MIDDLEWARES (ORDEM CRÍTICA)
@@ -834,8 +830,8 @@ app.include_router(agenda_router, prefix="/api", tags=["Agenda"])
 app.include_router(kpis_router, prefix="/api", tags=["KPIs"])
 app.include_router(ingest_audio_router, prefix="/api", tags=["Audio"])
 
-# Rotas de chat web simples (LEGADO)
-app.include_router(chat_web.router)
+# Rotas de chat web simples (LEGADO) - ✅ COMENTADO PARA EVITAR CONFLITO
+# app.include_router(chat_web.router)  # REMOVIDO: conflito com chat inteligente
 
 # Rotas executivas e de alertas
 app.include_router(executive_documents.router)
@@ -844,8 +840,6 @@ app.include_router(followup_alerts.router)
 
 # Rotas de diários executivos
 app.include_router(executive_journals_router)
-
-
 
 async def health_lite_endpoint():
     return await health_lite()
@@ -869,7 +863,7 @@ except ImportError as e:
 # Auth routes (v1)
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["Auth"])
 
-# Chat com memória (v2 - inteligente)
+# Chat com memória (v2 - inteligente) - ✅ ÚNICO CHAT ATIVO
 app.include_router(chat_router_v2, tags=["Chat IA"])
 
 # Reuniões com prefixo
@@ -890,186 +884,87 @@ if ADMIN_AUTH_AVAILABLE:
     print("✅ Admin auth routes registradas")
 
 # =====================================================
-# CHAT PÚBLICO PARA TESTES (SEM AUTENTICAÇÃO)  <-- ✅ NOVO ENDPOINT ADICIONADO
+# CHAT PÚBLICO PARA TESTES (SEM AUTENTICAÇÃO) - ✅ COMENTADO
 # =====================================================
-
-@app.post("/api/v1/chat/public")
-async def public_chat_endpoint(data: dict):
-    """Chat público para testes - sem autenticação necessária"""
-    message = data.get("message", "")
-    
-    try:
-        client = get_openai_client()
-        
-        if client:
-            # ✅ CORRIGIDO: Usa SDK antigo (0.28.1) - openai.ChatCompletion.create
-            response = openai.ChatCompletion.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": "Você é o assistente corporativo MAWDSLEYS. Responda de forma profissional e útil."},
-                    {"role": "user", "content": message}
-                ],
-                temperature=0.4,
-                max_tokens=500
-            )
-            reply = response.choices[0].message.content
-        else:
-            # Fallback se OpenAI não estiver disponível
-            reply = f"🤖 MAWDSLEYS (modo fallback): '{message}'"
-            
-    except Exception as e:
-        # Fallback amigável
-        print(f"⚠️ Erro no chat público: {e}")
-        if "oi" in message.lower() or "olá" in message.lower():
-            reply = "👋 Olá! Eu sou o Agente MAWDSLEYS."
-        else:
-            reply = f"🤖 MAWDSLEYS: Recebi sua mensagem: '{message}'"
-    
-    return {
-        "reply": reply,
-        "status": "success",
-        "openai_used": client is not None if 'client' in locals() else False,
-        "timestamp": datetime.utcnow().isoformat()
-    }
-
-@app.get("/api/v1/chat/public/health")
-async def public_chat_health():
-    """Health check para chat público"""
-    client = get_openai_client()
-    return {
-        "status": "healthy" if client else "fallback",
-        "endpoint": "/api/v1/chat/public",
-        "openai_available": client is not None,
-        "auth_required": False,
-        "timestamp": datetime.utcnow().isoformat()
-    }
+# ⚠️ ESTA SEÇÃO INTEIRA ESTÁ COMENTADA PARA EVITAR CONFLITOS
 
 # =====================================================
 # CHAT API PARA PRODUÇÃO (SDK NOVO OPENAI)
+# ❌ DESATIVADO — SUBSTITUÍDO PELO CHAT INTELIGENTE (api/routes/chat.py)
 # =====================================================
-
-@app.post("/api/v1/chat/")
-async def production_chat_endpoint(data: dict):
-    """Endpoint que o frontend está chamando (SDK NOVO)"""
-    message = data.get("message", "")
-    
-    try:
-        client = get_openai_client()  # ✅ AGORA CHAMANDO A FUNÇÃO SOB DEMANDA
-        
-        if client:
-            # ✅ CORRIGIDO: Usa SDK antigo (0.28.1) - openai.ChatCompletion.create
-            response = openai.ChatCompletion.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": "Você é o assistente corporativo MAWDSLEYS. Responda de forma profissional."},
-                    {"role": "user", "content": message}
-                ],
-                temperature=0.4,
-                max_tokens=500
-            )
-            reply = response.choices[0].message.content
-        else:
-            # Fallback se OpenAI não estiver disponível
-            raise Exception("OpenAI client not available")
-            
-    except Exception:
-        # Fallback amigável
-        if "oi" in message.lower() or "olá" in message.lower():
-            reply = "��� Olá! Eu sou o Agente MAWDSLEYS."
-        else:
-            reply = f"��� MAWDSLEYS Production\n\nRecebi: '{message}'\n\nSistema em funcionamento."
-    
-    client = get_openai_client()  # ✅ Chamada sob demanda para verificar status
-    return {
-        "reply": reply,
-        "status": "success",
-        "openai_used": client is not None,
-        "timestamp": datetime.utcnow().isoformat()
-    }
-
-@app.get("/api/v1/chat/health")
-async def production_chat_health():
-    """Health check específico para chat"""
-    client = get_openai_client()  # ✅ Chamada sob demanda
-    return {
-        "status": "healthy" if client else "fallback",
-        "endpoint": "/api/v1/chat/",
-        "openai_available": client is not None,
-        "timestamp": datetime.utcnow().isoformat()
-    }
+# ⚠️ ESTA SEÇÃO INTEIRA ESTÁ COMENTADA PARA EVITAR CONFLITOS
 
 # =====================================================
-# CHAT API LEGACY (FALLBACK - SDK NOVO)
+# CHAT API LEGACY (FALLBACK - SDK NOVO) - ✅ COMENTADO
 # =====================================================
-chat_router_legacy = APIRouter(prefix="/api/v1/chat-legacy", tags=["Chat Legacy"])
-
-class ChatRequestLegacy(BaseModel):
-    message: str
-    model: str = "gpt-4o-mini"
-    temperature: float = 0.4
-
-@chat_router_legacy.get("/health")
-async def chat_health_legacy():
-    client = get_openai_client()  # ✅ Chamada sob demanda
-    return {
-        "status": "online",
-        "openai": client is not None,
-        "model": "gpt-4o-mini",
-        "timestamp": datetime.utcnow().isoformat()
-    }
-
-@chat_router_legacy.post("/")
-async def chat_handler_legacy(data: ChatRequestLegacy):
-    try:
-        client = get_openai_client()  # ✅ Chamada sob demanda
-        
-        if client:
-            # ✅ CORRIGIDO: Usa SDK antigo (0.28.1) - openai.ChatCompletion.create
-            response = openai.ChatCompletion.create(
-                model=data.model,
-                messages=[
-                    {"role": "system", "content": "Você é o assistente corporativo MAWDSLEYS. Responda de forma profissional e útil."},
-                    {"role": "user", "content": data.message}
-                ],
-                temperature=data.temperature,
-                max_tokens=800
-            )
-            
-            reply = response.choices[0].message.content
-            tokens_used = response.usage.total_tokens if response.usage else None
-            
-            return {
-                "reply": reply,
-                "model": data.model,
-                "tokens_used": tokens_used,
-                "openai_sdk": "new"
-            }
-        else:
-            raise HTTPException(
-                status_code=503,
-                detail="OpenAI não disponível no momento"
-            )
-            
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, 
-            detail=f"Erro no processamento: {str(e)}"
-        )
-
-app.include_router(chat_router_legacy)
+# chat_router_legacy = APIRouter(prefix="/api/v1/chat-legacy", tags=["Chat Legacy"])
+# 
+# class ChatRequestLegacy(BaseModel):
+#     message: str
+#     model: str = "gpt-4o-mini"
+#     temperature: float = 0.4
+# 
+# @chat_router_legacy.get("/health")
+# async def chat_health_legacy():
+#     client = get_openai_client()  # ✅ Chamada sob demanda
+#     return {
+#         "status": "online",
+#         "openai": client is not None,
+#         "model": "gpt-4o-mini",
+#         "timestamp": datetime.utcnow().isoformat()
+#     }
+# 
+# @chat_router_legacy.post("/")
+# async def chat_handler_legacy(data: ChatRequestLegacy):
+#     try:
+#         client = get_openai_client()  # ✅ Chamada sob demanda
+#         
+#         if client:
+#             # ✅ CORRIGIDO: Usa SDK antigo (0.28.1) - openai.ChatCompletion.create
+#             response = openai.ChatCompletion.create(
+#                 model=data.model,
+#                 messages=[
+#                     {"role": "system", "content": "Você é o assistente corporativo MAWDSLEYS. Responda de forma profissional e útil."},
+#                     {"role": "user", "content": data.message}
+#                 ],
+#                 temperature=data.temperature,
+#                 max_tokens=800
+#             )
+#             
+#             reply = response.choices[0].message.content
+#             tokens_used = response.usage.total_tokens if response.usage else None
+#             
+#             return {
+#                 "reply": reply,
+#                 "model": data.model,
+#                 "tokens_used": tokens_used,
+#                 "openai_sdk": "new"
+#             }
+#         else:
+#             raise HTTPException(
+#                 status_code=503,
+#                 detail="OpenAI não disponível no momento"
+#             )
+#             
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=500, 
+#             detail=f"Erro no processamento: {str(e)}"
+#         )
+# 
+# app.include_router(chat_router_legacy)
 
 # =====================================================
 # STARTUP MESSAGE
 # =====================================================
 client = get_openai_client()  # ✅ Chamada sob demanda para status inicial
 print("✅ MAWDSLEYS API pronta com IA REAL (SDK NOVO)")
-print(f"📚 Documentação: http://localhost:8000/docs")
-print(f"📋 OpenAPI JSON: http://localhost:8000/openapi.json")
-print(f"🤖 Chat Inteligente: /api/v1/chat (SDK novo)")
+print(f"📚 Documentação: http://localhost:8080/docs")
+print(f"📋 OpenAPI JSON: http://localhost:8080/openapi.json")
+print(f"🤖 Chat Inteligente: /api/v1/chat (ÚNICO E FUNCIONAL)")
 print(f"🤖 Chat Health: /api/v1/chat/health")
-print(f"🤖 Chat Legacy: /api/v1/chat-legacy")
 print(f"📅 Reuniões: /meetings (com automação)")
 print(f"🔐 Auth endpoints: /api/v1/auth")
 if ADMIN_AUTH_AVAILABLE:
@@ -1091,7 +986,10 @@ print(f"   • /meetings/ - Frontend compatibility")
 print(f"   • /kpis/overview - Frontend compatibility")
 print(f"   • /knowledge/items - Frontend compatibility")
 print(f"   • /knowledge/stats - Frontend compatibility")
-print(f"🔧 OpenAI Status: {'✅ ONLINE' if openai.api_key else '⚠️ FALLBACK'}")  # ✅ CORRIGIDO: client → openai.api_key
+print(f"🔧 OpenAI Status: {'✅ ONLINE' if client else '⚠️ FALLBACK'}")
+print("")
+print("🚨 IMPORTANTE: Endpoints de chat conflitantes foram desativados.")
+print("   ✅ Apenas /api/v1/chat está ativo (chat inteligente com banco de dados).")
 
 # =====================================================
 # RUN
