@@ -7,9 +7,10 @@ import axios from "axios";
 
 // ✅ Base do backend via variável de ambiente (Vercel / Vite)
 // 🔒 Blindado: NUNCA usa localhost em produção
-export const baseURL =
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.MODE === "development" ? "http://localhost:8080" : "");
+export const baseURL = import.meta.env.VITE_API_URL || 
+  (import.meta.env.MODE === "development" 
+    ? "http://localhost:8080" 
+    : "https://backend-silent-snowflake-7300.fly.dev");
 
 // Instância única do Axios
 const api = axios.create({

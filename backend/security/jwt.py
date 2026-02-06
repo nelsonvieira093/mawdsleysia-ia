@@ -8,7 +8,7 @@ from jose import jwt, JWTError
 # ⚠️ EM PRODUÇÃO: usar variável de ambiente
 SECRET_KEY = "YOUR_SUPER_SECRET_KEY_CHANGE_IN_PRODUCTION"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 horas
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 *  180 # 180 dias
 
 
 def create_access_token(
