@@ -120,7 +120,7 @@ def get_followups_sql_direct(db: Session, user_id: str) -> List[dict]:
                 created_at,
                 priority,
                 tags
-            FROM follow_ups 
+            FROM followups 
             WHERE owner_id = :user_id 
                OR :user_id = '1'  -- Admin vê tudo
             ORDER BY 
@@ -159,7 +159,7 @@ def get_followups_sql_direct(db: Session, user_id: str) -> List[dict]:
         # Fallback: busca simples
         try:
             result = db.execute(
-                text("SELECT description, status FROM follow_ups LIMIT 10")
+                text("SELECT description, status FROM followups LIMIT 10")
             )
             rows = result.fetchall()
             return [{"description": r[0], "status": r[1]} for r in rows]
@@ -225,19 +225,19 @@ async def test_followups(
         
         # MODIFICAÇÃO: Use SQL direto
         # Total no banco
-        result = db.execute(text("SELECT COUNT(*) FROM follow_ups"))
+        result = db.execute(text("SELECT COUNT(*) FROM followups"))
         total_in_db = result.scalar()
         
         # Follow-ups do usuário
         result = db.execute(
-            text("SELECT COUNT(*) FROM follow_ups WHERE owner_id = :user_id"),
+            text("SELECT COUNT(*) FROM followups WHERE owner_id = :user_id"),
             {"user_id": str(user_id)}
         )
         user_followups_count = result.scalar()
         
         # Amostra
         result = db.execute(
-            text("SELECT id, description, status, owner_id FROM follow_ups LIMIT 5")
+            text("SELECT id, description, status, owner_id FROM followups LIMIT 5")
         )
         sample_data = []
         for row in result:
@@ -347,7 +347,7 @@ async def chat_inteligente(
                 print(f"🔍 [CHAT] Buscando follow-ups com SQL DIRETO...")
                 
                 # Primeiro: verifica quantos follow-ups existem no total
-                result = db.execute(text("SELECT COUNT(*) FROM follow_ups"))
+                result = db.execute(text("SELECT COUNT(*) FROM followups"))
                 total_count = result.scalar()
                 print(f"   📊 Total de follow-ups no banco: {total_count}")
                 
@@ -405,7 +405,7 @@ Detalhes técnicos:
             
             msg_lower = data.message.lower()
             has_executive_keywords = any(word in msg_lower for word in 
-                                       ["revisar", "analisar", "preparar", "entregar", 
+                                    ["revisar", "analisar", "preparar", "entregar", 
                                         "até", "prazo", "valor", "r$", "urgente"])
             
             if has_executive_keywords:
