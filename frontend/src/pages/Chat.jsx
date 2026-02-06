@@ -1,8 +1,8 @@
-// frontend/src/pages/Chat.jsx - VERSÃO CORRIGIDA E ROBUSTA COM MELHORIAS
+// frontend/src/pages/Chat.jsx - VERSÃO CORRIGIDA PARA PRODUÇÃO
 import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import ChatInput from "../components/ChatInput";
-import api from "../services/api";
+import api, { baseURL, chatWithAI } from "../services/api"; // ✅ Importa baseURL e chatWithAI
 import { useAuth } from "../contexts/AuthContext";
 import { getAIContext } from "../services/api";
 import ExecutiveBlock from "../components/ExecutiveBlock";
@@ -473,7 +473,7 @@ export default function Chat() {
           : data.actions_required || data.tasks || [],
         register_location:
           data.register_location || data.where_to_register || "DailyLog",
-        // 🔥 MELHORIA: Incluir dados extras
+        // 🔥 MELHORIA: Incluir dados extras se existirem
         deadline: data.deadline,
         priority: data.priority,
         urgency: data.urgency,
@@ -549,7 +549,7 @@ export default function Chat() {
     });
 
   // =============================
-  // ENVIO DE MENSAGEM
+  // ENVIO DE MENSAGEM - CORRIGIDO
   // =============================
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isTyping || !user?.id) {
@@ -573,45 +573,16 @@ export default function Chat() {
     const safeContext = aiContext || {};
 
     try {
-      const token = localStorage.getItem("token") || "";
-      const backendURL = "http://localhost:8080";
-
       console.log(`🚀 Enviando mensagem (modo: ${mode})...`);
 
-      const fetchResponse = await fetch(`${backendURL}/api/v1/chat`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          message: messageToSend,
-          context: safeContext,
-          mode: mode === "executive" ? "bullet_journal_ceo" : undefined,
-        }),
-      });
+      // ✅ CORREÇÃO PRINCIPAL: Usa função chatWithAI da API em vez de fetch direto
+      const result = await chatWithAI(messageToSend);
 
-      console.log("📡 Status da resposta:", fetchResponse.status);
-
-      if (!fetchResponse.ok) {
-        let errorText = "Erro desconhecido";
-        try {
-          errorText = await fetchResponse.text();
-        } catch {}
-        throw new Error(
-          `HTTP ${fetchResponse.status}: ${errorText.substring(0, 100)}`,
-        );
+      if (!result.success) {
+        throw new Error(result.error || "Erro na resposta da IA");
       }
 
-      const responseData = await fetchResponse.json();
-      console.log("✅ Resposta recebida, processando...");
-
-      const replyText =
-        responseData.reply ||
-        responseData.response ||
-        responseData.message ||
-        "";
+      const replyText = result.response || result.message || "";
 
       // =============================
       // 📘 BULLET JOURNAL (CEO) - PROCESSAMENTO CORRIGIDO
@@ -747,13 +718,18 @@ export default function Chat() {
     } catch (err) {
       console.error("❌ Erro no chat:", err);
 
+      // ✅ CORREÇÃO: Mensagem de erro mais amigável
+      const errorMessage = err.message.includes("Failed to fetch")
+        ? "⚠️ **Erro de conexão**\n\nNão foi possível conectar ao servidor. Verifique sua conexão ou tente novamente."
+        : `⚠️ **Erro técnico**\n\n${err.message}`;
+
       setMessages((prev) => [
         ...prev,
         {
           id: Date.now() + 1,
           role: "assistant",
           type: "error",
-          content: `⚠️ **Erro técnico**\n\n${err.message}`,
+          content: errorMessage,
           timestamp: new Date().toISOString(),
         },
       ]);
@@ -870,7 +846,7 @@ export default function Chat() {
                     "- Token:",
                     localStorage.getItem("token")?.substring(0, 20) + "...",
                   );
-                  console.log("- Backend URL:", "http://localhost:8080");
+                  console.log("- Backend URL:", baseURL); // ✅ CORREÇÃO: Usa baseURL
                   console.log("- AI Status:", aiStatus);
                   console.log("- Modo atual:", mode);
                   console.log("- Contexto AI:", aiContext);
@@ -879,8 +855,8 @@ export default function Chat() {
                     messages.find((m) => m.type === "executive"),
                   );
 
-                  // Teste rápido do backend
-                  fetch("http://localhost:8080/health")
+                  // ✅ CORREÇÃO: Teste do backend usando a baseURL
+                  fetch(`${baseURL}/health`)
                     .then((r) => r.json())
                     .then((data) => console.log("✅ Backend health:", data))
                     .catch((e) => console.error("❌ Backend error:", e));
@@ -1140,14 +1116,15 @@ export default function Chat() {
           mode={mode}
         />
 
-        {/* Informações técnicas */}
+        {/* Informações técnicas - CORRIGIDO */}
         <div className="tech-info">
           <div className="tech-card">
             <h4>⚙️ Informações do Sistema</h4>
             <ul>
               <li>
                 <span>Backend:</span>
-                <strong>localhost:8080</strong>
+                <strong>{baseURL.replace("https://", "")}</strong>{" "}
+                {/* ✅ CORREÇÃO */}
               </li>
               <li>
                 <span>Status:</span>
