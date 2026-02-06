@@ -2,16 +2,11 @@
 import axios from "axios";
 
 // =====================================================
-// CONFIGURAÇÃO BASE
+// CONFIGURAÇÃO BASE - PRODUÇÃO DEFINITIVA
 // =====================================================
 
-// ✅ Base do backend via variável de ambiente (Vercel / Vite)
-// 🔒 Blindado: NUNCA usa localhost em produção
-export const baseURL =
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.MODE === "development"
-    ? "http://localhost:8080"
-    : "https://backend-silent-snowflake-7300.fly.dev");
+// ✅ URL FIXA DE PRODUÇÃO - SEM VARIÁVEIS, SEM LOCALHOST
+export const baseURL = "https://backend-silent-snowflake-7300.fly.dev";
 
 // Instância única do Axios
 const api = axios.create({
@@ -259,4 +254,4 @@ export const getExecutiveJournals = async () => {
 // =====================================================
 
 export default api;
-// Último deploy: sex,  6 de fev de 2026 09:57:20
+ 
