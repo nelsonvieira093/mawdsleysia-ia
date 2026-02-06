@@ -102,14 +102,27 @@ async def health_lite():
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        # 🔥 SEU FRONTEND EXATO NO VERCEL
         "https://mawdsleys-agente.vercel.app",
-        "https://mawdsleys-agente-git-main-nelsonvieira093s-projects.vercel.app",
+        
+        # 🔥 TODAS AS VERSÕES DO SEU FRONTEND
+        "https://mawdsleys-agente-*.vercel.app",
+        "https://*.mawdsleys-agente.vercel.app",
+        
+        # 🔥 QUALQUER VERCEL (fallback)
+        "https://*.vercel.app",
+        
+        # 🔥 DESENVOLVIMENTO
         "http://localhost:5173",
         "http://localhost:3000",
+        "http://localhost:8080",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:3000",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # 2️⃣ MIDDLEWARE DE ACTIVITY LOG
