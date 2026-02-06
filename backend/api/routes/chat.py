@@ -121,8 +121,8 @@ def get_followups_sql_direct(db: Session, user_id: str) -> List[dict]:
                 priority,
                 tags
             FROM followups 
-            WHERE owner_id = :user_id 
-               OR :user_id = '1'  -- Admin vê tudo
+            WHERE owner_id = CAST(:user_id AS TEXT)
+               OR CAST(:user_id AS TEXT) = '1'  -- Admin vê tudo
             ORDER BY 
                 CASE 
                     WHEN status = 'PENDENTE' THEN 1
