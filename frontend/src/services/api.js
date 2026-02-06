@@ -254,5 +254,4 @@ export const getExecutiveJournals = async () => {
 // =====================================================
 
 export default api;
- 
- 
+// íº¨ URGENTE FIX: 2026-02-06_11:24:00
